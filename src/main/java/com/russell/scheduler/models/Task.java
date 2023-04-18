@@ -17,16 +17,18 @@ public class Task {
     private String name;
     @Column(name = "description")
     private String description = ""; // defaults blank
-    @Column(name = "assigned_to")
+    @ManyToOne
+    @JoinColumn(name = "assigned_to")
     private Resource assignee;
     @ManyToOne
-    @JoinColumn(name = "assigned_by", nullable = false)
+    @JoinColumn(name = "assigned_by")
     private User assigner;
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
-    @Column(name="project", nullable = false)
+    @ManyToOne
+    @JoinColumn(name="project", nullable = false)
     private Project project;
     @Column(name = "created_date", nullable = false)
     private LocalDate createdDate;
