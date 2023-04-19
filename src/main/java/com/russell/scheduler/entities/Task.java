@@ -1,4 +1,4 @@
-package com.russell.scheduler.models;
+package com.russell.scheduler.entities;
 
 import jakarta.persistence.*;
 
@@ -11,7 +11,6 @@ import java.util.UUID;
 public class Task {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(name = "name", nullable = false)
     private String name;

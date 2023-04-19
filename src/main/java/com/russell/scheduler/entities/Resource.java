@@ -1,4 +1,4 @@
-package com.russell.scheduler.models;
+package com.russell.scheduler.entities;
 
 import jakarta.persistence.*;
 
@@ -10,7 +10,6 @@ import java.util.UUID;
 @Table(name="resources")
 public class Resource {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(name = "email", nullable = false, unique = true)
     private String email;

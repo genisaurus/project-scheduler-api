@@ -1,6 +1,6 @@
 package com.russell.scheduler.repos;
 
-import com.russell.scheduler.models.User;
+import com.russell.scheduler.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

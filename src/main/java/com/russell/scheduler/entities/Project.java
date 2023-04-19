@@ -1,9 +1,10 @@
-package com.russell.scheduler.models;
+package com.russell.scheduler.entities;
 
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -12,7 +13,6 @@ import java.util.UUID;
 public class Project {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(name = "name", nullable = false, unique = true)
     private String name;
@@ -80,5 +80,33 @@ public class Project {
         for (Task t : tasks)
             res.add(t.getAssignee());
         return res;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Project project = (Project) o;
+        return Objects.equals(id, project.id)
+                && Objects.equals(name, project.name)
+                && Objects.equals(startDate, project.startDate)
+                && Objects.equals(endDate, project.endDate)
+                && Objects.equals(tasks, project.tasks);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, startDate, endDate, tasks);
+    }
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", tasks=" + tasks +
+                '}';
     }
 }

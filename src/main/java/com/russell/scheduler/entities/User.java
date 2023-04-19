@@ -1,4 +1,4 @@
-package com.russell.scheduler.models;
+package com.russell.scheduler.entities;
 
 import jakarta.persistence.*;
 
@@ -21,7 +21,6 @@ public class User {
     private String lastName;
     @Column(name = "password", nullable = false)
     private String password;
-
     @ManyToOne
     @JoinColumn(name = "role", nullable = false)
     private UserRole role;
@@ -36,6 +35,21 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
+    }
+
+    public User(String username, String email, String firstName, String lastName, String password, UserRole role) {
+        this(username, email, firstName, lastName, password);
+        this.role = role;
+    }
+
+    public User(UUID id, String username, String email, String firstName, String lastName, String password, UserRole role) {
+        this(username, email, firstName, lastName, password, role);
+        this.id = id;
+    }
+
+    public User(String id, String username, String email, String firstName, String lastName, String password, UserRole role) {
+        this(username, email, firstName, lastName, password, role);
+        this.id = UUID.fromString(id);
     }
 
     public UUID getId() {

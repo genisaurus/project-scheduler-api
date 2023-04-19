@@ -1,6 +1,6 @@
 package com.russell.scheduler.repos;
 
-import com.russell.scheduler.models.Task;
+import com.russell.scheduler.entities.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.russell.scheduler.models;
+package com.russell.scheduler.entities;
 
 import jakarta.persistence.*;
 
@@ -9,7 +9,6 @@ import java.util.Objects;
 public class UserRole {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "role_name", nullable = false, unique = true)
     private String roleName;
