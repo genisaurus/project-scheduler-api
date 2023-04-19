@@ -12,7 +12,7 @@ spring:
     username: postgres
     password: password
   jpa:
-    show-sql: true
+    show-sql: false
     generate-ddl: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -23,3 +23,6 @@ management:
     web:
       exposure:
         include: "*"
+
+jwt:
+  secret: super-secret-salt

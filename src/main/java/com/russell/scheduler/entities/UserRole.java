@@ -12,6 +12,8 @@ public class UserRole {
     private Integer id;
     @Column(name = "role_name", nullable = false, unique = true)
     private String roleName;
+    @Column(name = "priority", nullable = false)
+    private Integer priority;
 
     public UserRole() {
         super();
@@ -38,17 +40,27 @@ public class UserRole {
         this.roleName = roleName;
     }
 
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserRole userRole = (UserRole) o;
-        return Objects.equals(id, userRole.id) && Objects.equals(roleName, userRole.roleName);
+        return Objects.equals(id, userRole.id)
+                && Objects.equals(roleName, userRole.roleName)
+                && Objects.equals(priority, userRole.priority);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, roleName);
+        return Objects.hash(id, roleName, priority);
     }
 
     @Override

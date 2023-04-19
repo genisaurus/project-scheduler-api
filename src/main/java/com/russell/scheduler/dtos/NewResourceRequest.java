@@ -1,4 +1,4 @@
-package com.russell.scheduler.dto;
+package com.russell.scheduler.dtos;
 
 public class NewResourceRequest {
 }

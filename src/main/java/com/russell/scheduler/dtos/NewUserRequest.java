@@ -1,4 +1,4 @@
-package com.russell.scheduler.dto;
+package com.russell.scheduler.dtos;
 
 import com.russell.scheduler.entities.User;
 import com.russell.scheduler.entities.UserRole;
@@ -34,4 +34,14 @@ public class NewUserRequest {
         return new User(username, email, firstName, lastName, password, role);
     }
 
+    @Override
+    public String toString() {
+        return "NewUserRequest{" +
+                "username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", role=" + role +
+                '}';
+    }
 }

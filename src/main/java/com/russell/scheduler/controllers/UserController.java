@@ -1,10 +1,9 @@
 package com.russell.scheduler.controllers;
 
-import com.russell.scheduler.dto.NewUserRequest;
-import com.russell.scheduler.dto.RecordCreationResponse;
-import com.russell.scheduler.dto.UserResponse;
+import com.russell.scheduler.dtos.NewUserRequest;
+import com.russell.scheduler.dtos.RecordCreationResponse;
+import com.russell.scheduler.dtos.UserResponse;
 import com.russell.scheduler.services.UserService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

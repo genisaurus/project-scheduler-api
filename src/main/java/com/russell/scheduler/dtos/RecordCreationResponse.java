@@ -1,4 +1,4 @@
-package com.russell.scheduler.dto;
+package com.russell.scheduler.dtos;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

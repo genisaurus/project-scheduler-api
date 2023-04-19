@@ -1,6 +1,7 @@
 package com.russell.scheduler.aspects;
 
-import com.russell.scheduler.dto.ExceptionResponse;
+import com.russell.scheduler.dtos.ExceptionResponse;
+import com.russell.scheduler.exceptions.InvalidCredentialsException;
 import com.russell.scheduler.exceptions.RecordNotFoundException;
 import com.russell.scheduler.exceptions.RecordPersistenceException;
 import org.springframework.http.HttpStatus;
@@ -8,10 +9,20 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
-
 @RestControllerAdvice
 public class ExceptionResponseAspect {
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ExceptionResponse handleInvalidCredentialsException(InvalidCredentialsException e) {
+        return new ExceptionResponse(401, e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ExceptionResponse handleAuthorizationException(InvalidCredentialsException e) {
+        return new ExceptionResponse(403, e.getMessage());
+    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)

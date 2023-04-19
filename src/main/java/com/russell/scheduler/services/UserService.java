@@ -1,10 +1,11 @@
 package com.russell.scheduler.services;
 
-import com.russell.scheduler.dto.AuthRequest;
-import com.russell.scheduler.dto.NewUserRequest;
-import com.russell.scheduler.dto.RecordCreationResponse;
-import com.russell.scheduler.dto.UserResponse;
+import com.russell.scheduler.auth.dtos.AuthRequest;
+import com.russell.scheduler.dtos.NewUserRequest;
+import com.russell.scheduler.dtos.RecordCreationResponse;
+import com.russell.scheduler.dtos.UserResponse;
 import com.russell.scheduler.entities.User;
+import com.russell.scheduler.exceptions.InvalidCredentialsException;
 import com.russell.scheduler.exceptions.RecordNotFoundException;
 import com.russell.scheduler.exceptions.RecordPersistenceException;
 import com.russell.scheduler.repos.UserRepository;
@@ -28,14 +29,10 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public boolean authenticate(AuthRequest dto) {
-        return userRepository.findUserByUsernameAndPassword(dto.getUsername(), dto.getPassword()) == null;
-    }
-
-    public UserResponse fetchByUsernameAndPassword(AuthRequest dto) {
-        return new UserResponse(
-                userRepository.findUserByUsernameAndPassword(dto.getUsername(), dto.getPassword())
-        );
+    public UserResponse authenticate(@Valid AuthRequest req) {
+        return userRepository.findUserByUsernameAndPassword(req.getUsername(), req.getPassword())
+                .map(UserResponse::new)
+                .orElseThrow(InvalidCredentialsException::new);
     }
 
     public List<UserResponse> fetchAllUsers() {
