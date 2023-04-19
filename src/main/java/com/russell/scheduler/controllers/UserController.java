@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/users")
 public class UserController {
 
     private UserService userService;
@@ -23,18 +22,18 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(produces = "application/json")
+    @GetMapping(value = "/users", produces = "application/json")
     public List<UserResponse> fetchAllUsers() {
         return userService.fetchAllUsers();
     }
 
-    @GetMapping(produces = "application/json")
+    @GetMapping(value = "/user", produces = "application/json")
     public UserResponse fetchById(@RequestParam UUID id) {
         return userService.fetchUserById(id);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(produces = "application/json", consumes = "application/json")
+    @PostMapping(value = "/user", produces = "application/json", consumes = "application/json")
     public RecordCreationResponse createNewUser(@RequestBody NewUserRequest req){
         return userService.createUser(req);
     }

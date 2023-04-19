@@ -6,6 +6,7 @@ import com.russell.scheduler.dto.RecordCreationResponse;
 import com.russell.scheduler.dto.UserResponse;
 import com.russell.scheduler.entities.User;
 import com.russell.scheduler.exceptions.RecordNotFoundException;
+import com.russell.scheduler.exceptions.RecordPersistenceException;
 import com.russell.scheduler.repos.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -52,6 +53,13 @@ public class UserService {
 
     public RecordCreationResponse createUser(@Valid NewUserRequest req) {
         User user = req.extractUser();
+
+        // check DB for existing users with provided username/email
+        if (userRepository.existsByUsername(req.getUsername()))
+            throw new RecordPersistenceException("That username is taken");
+        if (userRepository.existsByEmail(req.getEmail()))
+            throw new RecordPersistenceException("That email address is already associated with another user");
+
         user.setId(UUID.randomUUID());
         userRepository.save(user);
         return new RecordCreationResponse(user.getId().toString());
