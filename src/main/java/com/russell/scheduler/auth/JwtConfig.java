@@ -1,6 +1,7 @@
 package com.russell.scheduler.auth;
 
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.base64.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,7 @@ public class JwtConfig {
     @PostConstruct // run after JwtConfig bean is created
     public void createSigningKey() {
         byte[] saltyBytes = Base64.encode(salt.getBytes());
-        signingKey = new SecretKeySpec(saltyBytes, alg.getJcaName());
+        signingKey = Keys.secretKeyFor(alg);
     }
 
     public int getExpiration() {
