@@ -33,3 +33,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Keys ###
+*.ppk
+*.pem
+
+### Environment Profiles ###
+application-dev.yml
