@@ -9,11 +9,12 @@ import com.russell.scheduler.exceptions.InvalidCredentialsException;
 import com.russell.scheduler.exceptions.RecordNotFoundException;
 import com.russell.scheduler.exceptions.RecordPersistenceException;
 import com.russell.scheduler.repos.UserRepository;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;

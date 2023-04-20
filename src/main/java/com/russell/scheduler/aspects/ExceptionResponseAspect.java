@@ -1,6 +1,7 @@
 package com.russell.scheduler.aspects;
 
 import com.russell.scheduler.dtos.ExceptionResponse;
+import com.russell.scheduler.exceptions.AuthorizationException;
 import com.russell.scheduler.exceptions.InvalidCredentialsException;
 import com.russell.scheduler.exceptions.RecordNotFoundException;
 import com.russell.scheduler.exceptions.RecordPersistenceException;
@@ -20,7 +21,7 @@ public class ExceptionResponseAspect {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ExceptionResponse handleAuthorizationException(InvalidCredentialsException e) {
+    public ExceptionResponse handleAuthorizationException(AuthorizationException e) {
         return new ExceptionResponse(403, e.getMessage());
     }
 

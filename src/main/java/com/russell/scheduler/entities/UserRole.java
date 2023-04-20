@@ -1,7 +1,10 @@
 package com.russell.scheduler.entities;
 
-import jakarta.persistence.*;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Objects;
 
 @Entity
@@ -19,9 +22,10 @@ public class UserRole {
         super();
     }
 
-    public UserRole(Integer id, String roleName) {
+    public UserRole(Integer id, String roleName, Integer priority) {
         this.id = id;
         this.roleName = roleName;
+        this.priority = priority;
     }
 
     public Integer getId() {

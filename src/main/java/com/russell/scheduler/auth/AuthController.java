@@ -5,7 +5,7 @@ import com.russell.scheduler.auth.dtos.Principal;
 import com.russell.scheduler.auth.dtos.TokenService;
 import com.russell.scheduler.dtos.UserResponse;
 import com.russell.scheduler.services.UserService;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

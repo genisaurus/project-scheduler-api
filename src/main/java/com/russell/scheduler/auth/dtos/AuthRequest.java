@@ -1,11 +1,10 @@
 package com.russell.scheduler.auth.dtos;
 
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-import java.util.Objects;
+import javax.validation.constraints.Pattern;
 
 @Data
 @NoArgsConstructor
