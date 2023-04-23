@@ -20,6 +20,9 @@ public class Project {
     private LocalDate startDate;
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
+    @ManyToOne
+    @JoinColumn(name="projects")
+    private Resource owner;
 
     @OneToMany(mappedBy = "project")
     private Set<Task> tasks;
@@ -32,6 +35,14 @@ public class Project {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.tasks = tasks;
+    }
+
+    public Project(String name, LocalDate startDate, LocalDate endDate, Resource owner, Set<Task> tasks) {
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.owner = owner;
         this.tasks = tasks;
     }
 
@@ -75,8 +86,17 @@ public class Project {
         this.tasks = tasks;
     }
 
+    public Resource getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Resource owner) {
+        this.owner = owner;
+    }
+
     public Set<Resource> getAllResources() {
         Set<Resource> res = new HashSet<>();
+        res.add(this.owner);
         for (Task t : tasks)
             res.add(t.getAssignee());
         return res;
@@ -91,12 +111,13 @@ public class Project {
                 && Objects.equals(name, project.name)
                 && Objects.equals(startDate, project.startDate)
                 && Objects.equals(endDate, project.endDate)
+                && Objects.equals(owner, project.owner)
                 && Objects.equals(tasks, project.tasks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, startDate, endDate, tasks);
+        return Objects.hash(id, name, startDate, endDate, owner, tasks);
     }
 
     @Override
@@ -106,6 +127,7 @@ public class Project {
                 ", name='" + name + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
+                ", owner=" + owner +
                 ", tasks=" + tasks +
                 '}';
     }

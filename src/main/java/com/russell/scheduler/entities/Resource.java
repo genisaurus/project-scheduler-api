@@ -17,6 +17,8 @@ public class Resource {
     private String firstName;
     @Column(name = "last_name", nullable = false)
     private String lastName;
+    @OneToMany(mappedBy = "owner")
+    private Set<Project> projects;
     @OneToMany(mappedBy = "assignee")
     private Set<Task> assignedTasks;
 
@@ -29,6 +31,14 @@ public class Resource {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+    public Resource(String email, String firstName, String lastName, Set<Project> projects, Set<Task> assignedTasks) {
+        this.id = id;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.projects = projects;
+        this.assignedTasks = assignedTasks;
     }
 
     public UUID getId() {
@@ -63,6 +73,14 @@ public class Resource {
         this.lastName = lastName;
     }
 
+    public Set<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(Set<Project> projects) {
+        this.projects = projects;
+    }
+
     public Set<Task> getAssignedTasks() {
         return assignedTasks;
     }
@@ -76,12 +94,17 @@ public class Resource {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Resource resource = (Resource) o;
-        return Objects.equals(id, resource.id) && Objects.equals(email, resource.email) && Objects.equals(firstName, resource.firstName) && Objects.equals(lastName, resource.lastName) && Objects.equals(assignedTasks, resource.assignedTasks);
+        return Objects.equals(id, resource.id)
+                && Objects.equals(email, resource.email)
+                && Objects.equals(firstName, resource.firstName)
+                && Objects.equals(lastName, resource.lastName)
+                && Objects.equals(projects, resource.projects)
+                && Objects.equals(assignedTasks, resource.assignedTasks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, firstName, lastName, assignedTasks);
+        return Objects.hash(id, email, firstName, lastName, projects, assignedTasks);
     }
 
     @Override
@@ -91,6 +114,7 @@ public class Resource {
                 ", email='" + email + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", projects='" + projects + '\'' +
                 ", assignedTasks=" + assignedTasks +
                 '}';
     }
