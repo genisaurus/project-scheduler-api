@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
+@RequestMapping(value = "/users")
 public class UserController {
 
     private UserService userService;
@@ -21,18 +23,18 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(value = "/users", produces = "application/json")
-    public List<UserResponse> fetchAllUsers() {
+    @GetMapping(produces = "application/json")
+    public Set<UserResponse> fetchAllUsers() {
         return userService.fetchAllUsers();
     }
 
-    @GetMapping(value = "/user", produces = "application/json")
-    public UserResponse fetchById(@RequestParam UUID id) {
-        return userService.fetchUserById(id);
+    @GetMapping(value = "/search", produces = "application/json")
+    public Set<UserResponse> search(@RequestParam Map<String, String> params) {
+        return userService.search(params);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "/user", produces = "application/json", consumes = "application/json")
+    @PostMapping(produces = "application/json", consumes = "application/json")
     public RecordCreationResponse createNewUser(@RequestBody NewUserRequest req){
         return userService.createUser(req);
     }

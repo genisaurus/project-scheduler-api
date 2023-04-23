@@ -1,6 +1,7 @@
 package com.russell.scheduler.services;
 
 import com.russell.scheduler.auth.dtos.AuthRequest;
+import com.russell.scheduler.common.EntitySearcher;
 import com.russell.scheduler.dtos.NewUserRequest;
 import com.russell.scheduler.dtos.RecordCreationResponse;
 import com.russell.scheduler.dtos.UserResponse;
@@ -15,7 +16,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -24,10 +26,12 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private UserRepository userRepository;
+    private EntitySearcher entitySearcher;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, EntitySearcher entitySearcher) {
         this.userRepository = userRepository;
+        this.entitySearcher = entitySearcher;
     }
 
     public UserResponse authenticate(@Valid AuthRequest req) {
@@ -36,17 +40,23 @@ public class UserService {
                 .orElseThrow(InvalidCredentialsException::new);
     }
 
-    public List<UserResponse> fetchAllUsers() {
+    public Set<UserResponse> fetchAllUsers() {
         return userRepository.findAll()
                 .stream()
                 .map(UserResponse::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
-    public UserResponse fetchUserById(UUID id) {
-        return userRepository.findById(id)
+    public Set<UserResponse> search(Map<String, String> params) {
+        if (params.isEmpty())
+            return fetchAllUsers();
+
+        Set<User> results = entitySearcher.search(params, User.class);
+        if (results.isEmpty())
+            throw new RecordNotFoundException();
+        return results.stream()
                 .map(UserResponse::new)
-                .orElseThrow(RecordNotFoundException::new);
+                .collect(Collectors.toSet());
     }
 
     public RecordCreationResponse createUser(@Valid NewUserRequest req) {

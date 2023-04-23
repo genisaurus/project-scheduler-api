@@ -1,10 +1,7 @@
 package com.russell.scheduler.aspects;
 
 import com.russell.scheduler.dtos.ExceptionResponse;
-import com.russell.scheduler.exceptions.AuthorizationException;
-import com.russell.scheduler.exceptions.InvalidCredentialsException;
-import com.russell.scheduler.exceptions.RecordNotFoundException;
-import com.russell.scheduler.exceptions.RecordPersistenceException;
+import com.russell.scheduler.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -12,6 +9,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ExceptionResponseAspect {
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse handleInvalidRequestException(InvalidRequestException e) {
+        return new ExceptionResponse(400, e.getMessage());
+    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
