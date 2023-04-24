@@ -1,8 +1,7 @@
 package com.russell.scheduler.auth;
 
-import com.russell.scheduler.auth.JwtConfig;
 import com.russell.scheduler.auth.dtos.Principal;
-import com.russell.scheduler.entities.UserRole;
+import com.russell.scheduler.user.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;

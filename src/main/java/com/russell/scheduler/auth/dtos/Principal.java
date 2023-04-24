@@ -1,7 +1,7 @@
 package com.russell.scheduler.auth.dtos;
 
-import com.russell.scheduler.dtos.UserResponse;
-import com.russell.scheduler.entities.UserRole;
+import com.russell.scheduler.user.dtos.UserResponse;
+import com.russell.scheduler.user.UserRole;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

@@ -2,8 +2,8 @@ package com.russell.scheduler.auth;
 
 import com.russell.scheduler.auth.dtos.AuthRequest;
 import com.russell.scheduler.auth.dtos.Principal;
-import com.russell.scheduler.dtos.UserResponse;
-import com.russell.scheduler.services.UserService;
+import com.russell.scheduler.user.dtos.UserResponse;
+import com.russell.scheduler.user.UserService;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

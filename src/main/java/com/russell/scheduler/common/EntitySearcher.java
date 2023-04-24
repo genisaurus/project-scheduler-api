@@ -1,7 +1,7 @@
 package com.russell.scheduler.common;
 
-import com.russell.scheduler.exceptions.InvalidRequestException;
-import com.russell.scheduler.exceptions.RecordNotFoundException;
+import com.russell.scheduler.common.exceptions.InvalidRequestException;
+import com.russell.scheduler.common.exceptions.RecordNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

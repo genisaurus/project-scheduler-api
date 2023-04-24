@@ -1,8 +1,12 @@
 package com.russell.scheduler.config;
 
-import com.russell.scheduler.entities.User;
-import com.russell.scheduler.entities.UserRole;
-import com.russell.scheduler.repos.*;
+import com.russell.scheduler.task.TaskRepository;
+import com.russell.scheduler.user.User;
+import com.russell.scheduler.user.UserRepository;
+import com.russell.scheduler.user.UserRole;
+import com.russell.scheduler.project.ProjectRepository;
+import com.russell.scheduler.resource.ResourceRepository;
+import com.russell.scheduler.user.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
