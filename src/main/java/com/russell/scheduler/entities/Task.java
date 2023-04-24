@@ -37,6 +37,13 @@ public class Task {
         super();
     }
 
+    public Task(String name, String description, LocalDate startDate, LocalDate endDate, Project project) {
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.project = project;
+    }
     public Task(String name, String description, Resource assignee, User assigner, LocalDate startDate, LocalDate endDate, Project project, LocalDate createdDate) {
         this.name = name;
         this.description = description;

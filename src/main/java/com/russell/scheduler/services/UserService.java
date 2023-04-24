@@ -40,16 +40,22 @@ public class UserService {
                 .orElseThrow(InvalidCredentialsException::new);
     }
 
-    public Set<UserResponse> fetchAllUsers() {
+    public Set<UserResponse> findAll() {
         return userRepository.findAll()
                 .stream()
                 .map(UserResponse::new)
                 .collect(Collectors.toSet());
     }
 
+    public UserResponse findOne(UUID resourceId) {
+        return userRepository.findById(resourceId)
+                .map(UserResponse::new)
+                .orElseThrow(RecordNotFoundException::new);
+    }
+
     public Set<UserResponse> search(Map<String, String> params) {
         if (params.isEmpty())
-            return fetchAllUsers();
+            return findAll();
 
         Set<User> results = entitySearcher.search(params, User.class);
         if (results.isEmpty())
@@ -59,7 +65,7 @@ public class UserService {
                 .collect(Collectors.toSet());
     }
 
-    public RecordCreationResponse createUser(@Valid NewUserRequest req) {
+    public RecordCreationResponse create(@Valid NewUserRequest req) {
         User user = req.extractUser();
 
         // check DB for existing users with provided username/email

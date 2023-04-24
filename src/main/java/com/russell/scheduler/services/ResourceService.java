@@ -1,9 +1,7 @@
 package com.russell.scheduler.services;
 
 import com.russell.scheduler.common.EntitySearcher;
-import com.russell.scheduler.dtos.NewResourceRequest;
-import com.russell.scheduler.dtos.RecordCreationResponse;
-import com.russell.scheduler.dtos.ResourceResponse;
+import com.russell.scheduler.dtos.*;
 import com.russell.scheduler.entities.Resource;
 import com.russell.scheduler.exceptions.RecordNotFoundException;
 import com.russell.scheduler.exceptions.RecordPersistenceException;
@@ -29,16 +27,22 @@ public class ResourceService {
         this.entitySearcher = entitySearcher;
     }
 
-    public Set<ResourceResponse> fetchAllResources() {
+    public Set<ResourceResponse> findAll() {
         return resourceRepository.findAll()
                 .stream()
                 .map(ResourceResponse::new)
                 .collect(Collectors.toSet());
     }
 
+    public ResourceResponse findOne(UUID resourceId) {
+        return resourceRepository.findById(resourceId)
+                .map(ResourceResponse::new)
+                .orElseThrow(RecordNotFoundException::new);
+    }
+
     public Set<ResourceResponse> search(Map<String, String> params) {
         if (params.isEmpty())
-            return fetchAllResources();
+            return findAll();
 
         Set<Resource> results = entitySearcher.search(params, Resource.class);
         if (results.isEmpty())
@@ -48,7 +52,7 @@ public class ResourceService {
                 .collect(Collectors.toSet());
     }
 
-    public RecordCreationResponse createResource(@Valid NewResourceRequest req) {
+    public RecordCreationResponse create(@Valid NewResourceRequest req) {
         Resource resource = req.extractResource();
 
         // check DB for existing users with provided username/email
@@ -58,5 +62,18 @@ public class ResourceService {
         resource.setId(UUID.randomUUID());
         resourceRepository.save(resource);
         return new RecordCreationResponse(resource.getId().toString());
+    }
+
+    public void delete(UUID resourceId) {
+        resourceRepository.deleteById(resourceId);
+    }
+
+    public ResourceResponse update(UUID resourceId, NewResourceRequest req) {
+        Resource resource = resourceRepository.findById(resourceId)
+                .orElseThrow(RecordNotFoundException::new);
+        resource.setEmail(req.getEmail());
+        resource.setFirstName(req.getFirstName());
+        resource.setLastName(req.getLastName());
+        return new ResourceResponse(resource);
     }
 }

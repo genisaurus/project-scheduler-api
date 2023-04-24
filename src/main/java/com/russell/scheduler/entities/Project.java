@@ -20,10 +20,10 @@ public class Project {
     private LocalDate startDate;
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
+
     @ManyToOne
     @JoinColumn(name="projects")
     private Resource owner;
-
     @OneToMany(mappedBy = "project")
     private Set<Task> tasks;
 
@@ -31,11 +31,10 @@ public class Project {
         super();
     }
 
-    public Project(String name, LocalDate startDate, LocalDate endDate, Set<Task> tasks) {
+    public Project(String name, LocalDate startDate, LocalDate endDate) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.tasks = tasks;
     }
 
     public Project(String name, LocalDate startDate, LocalDate endDate, Resource owner, Set<Task> tasks) {

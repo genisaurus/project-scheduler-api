@@ -2,7 +2,6 @@ package com.russell.scheduler.auth;
 
 import com.russell.scheduler.auth.dtos.AuthRequest;
 import com.russell.scheduler.auth.dtos.Principal;
-import com.russell.scheduler.auth.dtos.TokenService;
 import com.russell.scheduler.dtos.UserResponse;
 import com.russell.scheduler.services.UserService;
 import javax.servlet.http.HttpServletResponse;

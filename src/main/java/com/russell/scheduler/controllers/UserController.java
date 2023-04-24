@@ -2,6 +2,7 @@ package com.russell.scheduler.controllers;
 
 import com.russell.scheduler.dtos.NewUserRequest;
 import com.russell.scheduler.dtos.RecordCreationResponse;
+import com.russell.scheduler.dtos.ResourceResponse;
 import com.russell.scheduler.dtos.UserResponse;
 import com.russell.scheduler.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,12 @@ public class UserController {
 
     @GetMapping(produces = "application/json")
     public Set<UserResponse> fetchAllUsers() {
-        return userService.fetchAllUsers();
+        return userService.findAll();
+    }
+
+    @GetMapping(value="id/{id}", produces = "application/json")
+    public UserResponse getSingleResource(@PathVariable(name="id") UUID userId) {
+        return userService.findOne(userId);
     }
 
     @GetMapping(value = "/search", produces = "application/json")
@@ -36,6 +42,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(produces = "application/json", consumes = "application/json")
     public RecordCreationResponse createNewUser(@RequestBody NewUserRequest req){
-        return userService.createUser(req);
+        return userService.create(req);
     }
 }
