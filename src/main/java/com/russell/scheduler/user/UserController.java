@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping(value="id/{id}", produces = "application/json")
-    public UserResponse getSingleResource(@PathVariable(name="id") UUID userId) {
+    public UserResponse getSingleUser(@PathVariable(name="id") UUID userId) {
         return userService.findOne(userId);
     }
 

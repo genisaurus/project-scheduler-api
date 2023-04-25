@@ -52,13 +52,13 @@ public class ProjectController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping(value="id/{id}")
+    @PatchMapping(value="id/{id}")
     public TaskResponse updateProject(@PathVariable(name = "id") UUID projectId, @RequestBody NewProjectRequest req) {
         return projectService.update(projectId, req);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping(value="assign")
+    @PatchMapping(value="assign")
     public TaskResponse assignProject(@RequestBody ProjectAssignment assignment) {
         return projectService.assignProjectToResource(assignment);
     }

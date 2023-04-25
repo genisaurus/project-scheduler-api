@@ -51,7 +51,7 @@ public class ResourceController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping(value="id/{id}")
+    @PatchMapping(value="id/{id}")
     public ResourceResponseDetailed updateResource(@PathVariable(name = "id") UUID resourceId, @RequestBody NewResourceRequest req) {
         return resourceService.update(resourceId, req);
     }

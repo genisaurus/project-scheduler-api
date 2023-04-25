@@ -52,13 +52,13 @@ public class TaskController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping(value="id/{id}")
+    @PatchMapping(value="id/{id}")
     public TaskResponse updateTask(@PathVariable(name = "id") UUID taskId, @RequestBody NewTaskRequest req) {
         return taskService.update(taskId, req);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping(value="assign")
+    @PatchMapping(value="assign")
     public TaskResponse assignProject(@RequestHeader("Authorization") String token, @RequestBody TaskAssignment assignment) {
         return taskService.assignTaskToResource(token, assignment);
     }
