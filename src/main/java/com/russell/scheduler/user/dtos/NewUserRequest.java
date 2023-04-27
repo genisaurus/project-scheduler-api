@@ -3,6 +3,7 @@ package com.russell.scheduler.user.dtos;
 import com.russell.scheduler.user.User;
 import com.russell.scheduler.user.UserRole;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class NewUserRequest {
     @NotNull
     @Size(min = 4)

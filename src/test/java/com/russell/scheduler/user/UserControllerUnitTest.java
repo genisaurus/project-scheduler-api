@@ -1,6 +1,9 @@
 package com.russell.scheduler.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.russell.scheduler.common.dtos.RecordCreationResponse;
 import com.russell.scheduler.common.exceptions.RecordNotFoundException;
+import com.russell.scheduler.user.dtos.NewUserRequest;
 import com.russell.scheduler.user.dtos.UserResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
@@ -29,7 +30,7 @@ public class UserControllerUnitTest {
     private final String CONTENT_TYPE = "application/json";
 
     @Test
-    void test_getAll_returnSetOfUserResponses() throws Exception {
+    void test_getAll_returnsSetOfUserResponses() throws Exception {
         Set<UserResponse> mockUsers = new HashSet<>();
         mockUsers.add(
                 new UserResponse(
@@ -53,7 +54,7 @@ public class UserControllerUnitTest {
     }
 
     @Test
-    void test_getOneUser_returnUserResponse_providedValidUUID() throws Exception {
+    void test_getOneUser_returnsUserResponse_providedValidUUID() throws Exception {
         UserResponse mockUser = new UserResponse(new User(
                 UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
                 "mockuser1", "mock@user.one", "first1", "last1",
@@ -64,10 +65,10 @@ public class UserControllerUnitTest {
         MvcResult result = mockMvc.perform(get(PATH+"/id/"+mockUser.getId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(header().string("content-type", CONTENT_TYPE))
-                .andExpect(jsonPath("$.username").value("mockuser1"))
-                .andExpect(jsonPath("$.email").value("mock@user.one"))
-                .andExpect(jsonPath("$.firstName").value("first1"))
-                .andExpect(jsonPath("$.lastName").value("last1"))
+                .andExpect(jsonPath("$.username").value(mockUser.getUsername()))
+                .andExpect(jsonPath("$.email").value(mockUser.getEmail()))
+                .andExpect(jsonPath("$.firstName").value(mockUser.getFirstName()))
+                .andExpect(jsonPath("$.lastName").value(mockUser.getLastName()))
                 .andExpect(jsonPath("$.role").isMap())
                 .andReturn();
     }
@@ -85,6 +86,57 @@ public class UserControllerUnitTest {
                 .andExpect(status().isNotFound())
                 .andExpect(header().string("content-type", CONTENT_TYPE))
                 .andExpect(jsonPath("$.statusCode").value(404))
+                .andReturn();
+    }
+
+    @Test
+    void test_search_returnsSetOfUserResponses_providedValidTerm() throws Exception {
+        UserResponse mockUser = new UserResponse(new User(
+                UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
+                "mockuser1", "mock@user.one", "first1", "last1",
+                "P@ssword1", new UserRole(1, "ADMIN", 1)));
+        Map<String, String> params = new HashMap<>();
+        params.put("firstName", mockUser.getFirstName());
+
+        when(mockUserService.search(params)).thenReturn(Set.of(mockUser));
+
+        MvcResult result = mockMvc.perform(get(PATH+"/search")
+                        .param("firstName", mockUser.getFirstName()))
+                .andExpect(status().isOk())
+                .andExpect(header().string("content-type", CONTENT_TYPE))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andReturn();
+    }
+
+    @Test
+    void test_search_throwsRecordNotFoundException_givenBadParams() throws Exception {
+        when(mockUserService.search(Map.of("firstName", "DoesNotExist"))).thenThrow(RecordNotFoundException.class);
+
+        MvcResult result = mockMvc.perform(get(PATH+"/search")
+                    .param("firstName", "DoesNotExist"))
+                .andExpect(status().isNotFound())
+                .andExpect(header().string("content-type", CONTENT_TYPE))
+                .andExpect(jsonPath("$.statusCode").value(404))
+                .andReturn();
+    }
+
+    @Test
+    void test_create_returnsRecordCreationResponse_givenNewUserRequest() throws Exception {
+        NewUserRequest req = new NewUserRequest("mockuser1", "P@ssword1", "mock@user.one",
+                "first1", "last1", new UserRole(1, "ADMIN", 1));
+        RecordCreationResponse resp = new RecordCreationResponse();
+        resp.setId("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b");
+        ObjectMapper json = new ObjectMapper();
+
+        when(mockUserService.create(req)).thenReturn(resp);
+
+        MvcResult result = mockMvc.perform(post(PATH)
+                        .contentType(CONTENT_TYPE)
+                        .content(json.writeValueAsString(req)))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("content-type", CONTENT_TYPE))
+                .andExpect(jsonPath("$.id").value(resp.getId()))
                 .andReturn();
     }
 }

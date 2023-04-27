@@ -150,6 +150,21 @@ public class UserServiceUnitTest {
     }
 
     @Test
+    void test_search_redirectsToFindAll_providedEmptyParams() {
+        List<User> mockUsers = Arrays.asList(
+                new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"), "mockuser1", "mock@user.one", "first1", "last1", "P@ssword1", new UserRole(1, "ADMIN", 1)),
+                new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087c"), "mockuser2", "mock@user.two", "first2", "last2", "P@ssword2", new UserRole(2, "TEST", 2))
+        );
+        when(mockUserRepo.findAll()).thenReturn(mockUsers);
+
+        Set<UserResponse> response = service.search(new HashMap<String,String>());
+
+        // assert the proper number of users was returned, and that the repo was only queried once
+        assertEquals(mockUsers.size(), response.size());
+        verify(mockUserRepo, times(1)).findAll();
+    }
+
+    @Test
     void test_search_throwsRecordNotFoundException_providedBadUsername() {
         Map<String, String> criteria = new HashMap<>();
         criteria.put("username", "doesnotexist");
