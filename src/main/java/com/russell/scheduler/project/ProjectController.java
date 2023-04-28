@@ -57,7 +57,7 @@ public class ProjectController {
         return projectService.update(projectId, req);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value="assign")
     public TaskResponse assignProject(@RequestBody ProjectAssignment assignment) {
         return projectService.assignProjectToResource(assignment);

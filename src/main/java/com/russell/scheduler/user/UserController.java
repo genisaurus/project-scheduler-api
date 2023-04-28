@@ -27,7 +27,7 @@ public class UserController {
         return userService.findAll();
     }
 
-    @GetMapping(value="id/{id}", produces = "application/json")
+    @GetMapping(value="/id/{id}", produces = "application/json")
     public UserResponse getSingleUser(@PathVariable(name="id") UUID userId) {
         return userService.findOne(userId);
     }

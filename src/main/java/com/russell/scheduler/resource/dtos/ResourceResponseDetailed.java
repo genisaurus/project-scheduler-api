@@ -4,6 +4,7 @@ import com.russell.scheduler.task.dtos.TaskResponse;
 import com.russell.scheduler.resource.Resource;
 import com.russell.scheduler.project.dtos.ProjectResponse;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Set;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 // This class exists to prevent circular references between Resource.tasks -> Task.project
 // and Resource.projects -> Project.owner
 public class ResourceResponseDetailed extends ResourceResponse {
@@ -26,5 +28,14 @@ public class ResourceResponseDetailed extends ResourceResponse {
         this.assignedTasks = resource.getAssignedTasks().stream()
                 .map(TaskResponse::new)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String toString() {
+        return "ResourceResponseDetailed{" +
+                super.toString() +
+                ", projects=" + projects +
+                ", assignedTasks=" + assignedTasks +
+                '}';
     }
 }

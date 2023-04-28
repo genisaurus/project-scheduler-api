@@ -90,7 +90,7 @@ public class UserControllerUnitTest {
     }
 
     @Test
-    void test_search_returnsSetOfUserResponses_providedValidTerm() throws Exception {
+    void test_search_returnsSetOfUserResponses_providedValidParam() throws Exception {
         UserResponse mockUser = new UserResponse(new User(
                 UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
                 "mockuser1", "mock@user.one", "first1", "last1",
@@ -110,7 +110,7 @@ public class UserControllerUnitTest {
     }
 
     @Test
-    void test_search_throwsRecordNotFoundException_givenBadParams() throws Exception {
+    void test_search_throwsRecordNotFoundException_givenBadParam() throws Exception {
         when(mockUserService.search(Map.of("firstName", "DoesNotExist"))).thenThrow(RecordNotFoundException.class);
 
         MvcResult result = mockMvc.perform(get(PATH+"/search")

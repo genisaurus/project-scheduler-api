@@ -30,12 +30,11 @@ public class Resource {
     }
 
     public Resource(String email, String firstName, String lastName) {
-        this.id = id;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
     }
-    public Resource(String email, String firstName, String lastName, Set<Project> projects, Set<Task> assignedTasks) {
+    public Resource(UUID id, String email, String firstName, String lastName, Set<Project> projects, Set<Task> assignedTasks) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;

@@ -78,7 +78,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
-    void test_fetchAllUsers_returnSetOfUserResponses_providedRepoReturnsUsers() {
+    void test_findAllUsers_returnSetOfUserResponses_providedRepoReturnsUsers() {
         List<User> mockUsers = Arrays.asList(
                 new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"), "mockuser1", "mock@user.one", "first1", "last1", "P@ssword1", new UserRole(1, "ADMIN", 1)),
                 new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087c"), "mockuser2", "mock@user.two", "first2", "last2", "P@ssword2", new UserRole(2, "TEST", 2))
@@ -93,7 +93,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
-    void test_fetchSingleUser_returnUserResponse_providedUserId() {
+    void test_findSingleUser_returnUserResponse_providedUserId() {
         User mockUser = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
                 "mockuser1", "mock@user.one", "first1", "last1",
                 "P@ssword1", new UserRole(1, "ADMIN", 1));
@@ -111,7 +111,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
-    void test_fetchSingleUser_throwsRecordNotFoundException_providedBadUserId() {
+    void test_findSingleUser_throwsRecordNotFoundException_providedBadUserId() {
         UUID badUserId = UUID.randomUUID();
 
         when(mockUserRepo.findById(badUserId)).thenReturn(Optional.empty());
@@ -127,7 +127,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
-    void test_search_returnsListOfUserResponses_providedUsername() {
+    void test_search_returnsSetOfUserResponses_providedValidParam() {
         Set<User> mockUsers = new HashSet<>();
         User mockUser = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
                         "mockuser1", "mock@user.one", "first1", "last1",
@@ -165,7 +165,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
-    void test_search_throwsRecordNotFoundException_providedBadUsername() {
+    void test_search_throwsRecordNotFoundException_providedBadParam() {
         Map<String, String> criteria = new HashMap<>();
         criteria.put("username", "doesnotexist");
         when(mockEntitySearcher.search(criteria, User.class)).thenReturn(new HashSet<>());
@@ -236,7 +236,7 @@ public class UserServiceUnitTest {
         request.setLastName("last1");
         request.setRole(new UserRole(1, "ADMIN", 1));
 
-        when(mockUserRepo.existsByEmail(request.getUsername())).thenReturn(false);
+        when(mockUserRepo.existsByUsername(request.getUsername())).thenReturn(false);
         when(mockUserRepo.existsByEmail(request.getEmail())).thenReturn(false);
         when(mockUserRepo.save(any(User.class))).thenReturn(any(User.class));
 

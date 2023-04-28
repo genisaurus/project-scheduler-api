@@ -76,6 +76,7 @@ public class ResourceService {
         resource.setEmail(req.getEmail());
         resource.setFirstName(req.getFirstName());
         resource.setLastName(req.getLastName());
+        resourceRepository.save(resource);
         return new ResourceResponseDetailed(resource);
     }
 }

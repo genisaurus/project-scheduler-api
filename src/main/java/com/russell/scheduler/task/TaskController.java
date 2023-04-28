@@ -57,7 +57,7 @@ public class TaskController {
         return taskService.update(taskId, req);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value="assign")
     public TaskResponse assignProject(@RequestHeader("Authorization") String token, @RequestBody TaskAssignment assignment) {
         return taskService.assignTaskToResource(token, assignment);
