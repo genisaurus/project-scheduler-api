@@ -21,51 +21,50 @@ public class UserServiceUnitTest {
     private UserService service;
     private final UserRepository mockUserRepo = mock(UserRepository.class);
     private final EntitySearcher mockEntitySearcher = mock(EntitySearcher.class);
+    private User mockUser1;
+    private User mockUser2;
 
     @BeforeEach
     public void setup() {
         reset(mockUserRepo, mockEntitySearcher);
         service = new UserService(mockUserRepo, mockEntitySearcher);
+        mockUser1 = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
+                "mockuser1", "mock@user.one", "first1", "last1",
+                "P@ssword1", new UserRole(1, "ADMIN", 1));
+        mockUser2 = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087c"),
+                "mockuser2", "mock@user.two", "first2", "last2",
+                "P@ssword2", new UserRole(2, "TEST", 2));
     }
 
     @Test
     void test_authenticate_returnUserResponse_providedAuthRequest() {
-        String username = "mockuser1";
-        String password = "P@ssword1";
         AuthRequest request = new AuthRequest();
-        request.setUsername(username);
-        request.setPassword(password);
+        request.setUsername(mockUser1.getUsername());
+        request.setPassword(mockUser1.getPassword());
 
-        User mockUser = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                "mockuser1", "mock@user.one", "first1", "last1",
-                "P@ssword1", new UserRole(1, "ADMIN", 1));
-
-        when(mockUserRepo.findUserByUsernameAndPassword(username, password)).thenReturn(Optional.of(mockUser));
+        when(mockUserRepo.findUserByUsernameAndPassword(request.getUsername(), request.getPassword()))
+                .thenReturn(Optional.of(mockUser1));
 
         UserResponse response = service.authenticate(request);
 
         // assert all fields of the generated response match the test user, and that the repo was only
         // queried once
         assertAll(
-                () -> assertEquals(mockUser.getId(), response.getId()),
-                () -> assertEquals(mockUser.getUsername(), response.getUsername()),
-                () -> assertEquals(mockUser.getRole(), response.getRole()));
-        verify(mockUserRepo, times(1)).findUserByUsernameAndPassword(username, password);
+                () -> assertEquals(mockUser1.getId(), response.getId()),
+                () -> assertEquals(mockUser1.getUsername(), response.getUsername()),
+                () -> assertEquals(mockUser1.getRole(), response.getRole()));
+        verify(mockUserRepo, times(1))
+                .findUserByUsernameAndPassword(mockUser1.getUsername(), mockUser1.getPassword());
     }
 
     @Test
     void test_authenticate_throwsInvalidCredentialsException_providedBadUsername() {
-        String username = "mockuser1";
-        String password = "wrongP@ssword";
         AuthRequest request = new AuthRequest();
-        request.setUsername(username);
-        request.setPassword(password);
+        request.setUsername(mockUser1.getUsername());
+        request.setPassword("wrongP@ssword");
 
-        User mockUser = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                "mockuser1", "mock@user.one", "first1", "last1",
-                "P@ssword1", new UserRole(1, "ADMIN", 1));
-
-        when(mockUserRepo.findUserByUsernameAndPassword(username, password)).thenReturn(Optional.empty());
+        when(mockUserRepo.findUserByUsernameAndPassword(request.getUsername(), request.getPassword()))
+                .thenReturn(Optional.empty());
 
         // assert the InvalidCredentialsException is thrown on authentication
         InvalidCredentialsException exception = assertThrows(
@@ -74,15 +73,13 @@ public class UserServiceUnitTest {
 
         // assert the proper message is returned, and that the repo was only queried once
         assertEquals("Invalid username or password", exception.getMessage());
-        verify(mockUserRepo, times(1)).findUserByUsernameAndPassword(username, password);
+        verify(mockUserRepo, times(1))
+                .findUserByUsernameAndPassword(request.getUsername(), request.getPassword());
     }
 
     @Test
     void test_findAllUsers_returnSetOfUserResponses_providedRepoReturnsUsers() {
-        List<User> mockUsers = Arrays.asList(
-                new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"), "mockuser1", "mock@user.one", "first1", "last1", "P@ssword1", new UserRole(1, "ADMIN", 1)),
-                new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087c"), "mockuser2", "mock@user.two", "first2", "last2", "P@ssword2", new UserRole(2, "TEST", 2))
-        );
+        List<User> mockUsers = Arrays.asList(mockUser1, mockUser2);
         when(mockUserRepo.findAll()).thenReturn(mockUsers);
 
         Set<UserResponse> response = service.findAll();
@@ -94,20 +91,17 @@ public class UserServiceUnitTest {
 
     @Test
     void test_findSingleUser_returnUserResponse_providedUserId() {
-        User mockUser = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                "mockuser1", "mock@user.one", "first1", "last1",
-                "P@ssword1", new UserRole(1, "ADMIN", 1));
-        when(mockUserRepo.findById(mockUser.getId())).thenReturn(Optional.of(mockUser));
+        when(mockUserRepo.findById(mockUser1.getId())).thenReturn(Optional.of(mockUser1));
 
-        UserResponse response = service.findOne(mockUser.getId());
+        UserResponse response = service.findOne(mockUser1.getId());
 
         // assert all fields of the generated response match the test user, and that the repo was only
         // queried once
         assertAll(
-                () -> assertEquals(mockUser.getId(), response.getId()),
-                () -> assertEquals(mockUser.getUsername(), response.getUsername()),
-                () -> assertEquals(mockUser.getRole(), response.getRole()));
-        verify(mockUserRepo, times(1)).findById(mockUser.getId());
+                () -> assertEquals(mockUser1.getId(), response.getId()),
+                () -> assertEquals(mockUser1.getUsername(), response.getUsername()),
+                () -> assertEquals(mockUser1.getRole(), response.getRole()));
+        verify(mockUserRepo, times(1)).findById(mockUser1.getId());
     }
 
     @Test
@@ -128,14 +122,10 @@ public class UserServiceUnitTest {
 
     @Test
     void test_search_returnsSetOfUserResponses_providedValidParam() {
-        Set<User> mockUsers = new HashSet<>();
-        User mockUser = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                        "mockuser1", "mock@user.one", "first1", "last1",
-                        "P@ssword1", new UserRole(1, "ADMIN", 1));
-        mockUsers.add(mockUser);
+        Set<User> mockUsers = Set.of(mockUser1);
 
         Map<String, String> criteria = new HashMap<>();
-        criteria.put("username", "mockuser1");
+        criteria.put("username", mockUser1.getUsername());
         when(mockEntitySearcher.search(criteria, User.class)).thenReturn(mockUsers);
 
         Set<UserResponse> response = service.search(criteria);
@@ -143,18 +133,15 @@ public class UserServiceUnitTest {
         UserResponse content = response.stream().findFirst().get();
         assertAll(
                 () -> assertEquals(mockUsers.size(), response.size()),
-                () -> assertEquals(mockUser.getId(), content.getId()),
-                () -> assertEquals(mockUser.getUsername(), content.getUsername()),
-                () -> assertEquals(mockUser.getRole(), content.getRole()));
+                () -> assertEquals(mockUser1.getId(), content.getId()),
+                () -> assertEquals(mockUser1.getUsername(), content.getUsername()),
+                () -> assertEquals(mockUser1.getRole(), content.getRole()));
         verify(mockEntitySearcher, times(1)).search(criteria, User.class);
     }
 
     @Test
     void test_search_redirectsToFindAll_providedEmptyParams() {
-        List<User> mockUsers = Arrays.asList(
-                new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"), "mockuser1", "mock@user.one", "first1", "last1", "P@ssword1", new UserRole(1, "ADMIN", 1)),
-                new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087c"), "mockuser2", "mock@user.two", "first2", "last2", "P@ssword2", new UserRole(2, "TEST", 2))
-        );
+        List<User> mockUsers = Arrays.asList(mockUser1, mockUser2);
         when(mockUserRepo.findAll()).thenReturn(mockUsers);
 
         Set<UserResponse> response = service.search(new HashMap<String,String>());
@@ -183,12 +170,12 @@ public class UserServiceUnitTest {
     @Test
     void test_create_throwsRecordPersistenceException_providedDuplicateUsername() {
         NewUserRequest request = new NewUserRequest();
-        request.setUsername("mockuser1");
-        request.setPassword("P@ssword1");
-        request.setEmail("test@mock.one");
-        request.setFirstName("first1");
-        request.setLastName("last1");
-        request.setRole(new UserRole(1, "ADMIN", 1));
+        request.setUsername(mockUser1.getUsername());
+        request.setPassword(mockUser1.getPassword());
+        request.setEmail(mockUser1.getEmail());
+        request.setFirstName(mockUser1.getFirstName());
+        request.setLastName(mockUser1.getLastName());
+        request.setRole(mockUser1.getRole());
 
         when(mockUserRepo.existsByUsername(request.getUsername())).thenReturn(true);
 
@@ -206,12 +193,12 @@ public class UserServiceUnitTest {
     @Test
     void test_create_throwsRecordPersistenceException_providedDuplicateEmail() {
         NewUserRequest request = new NewUserRequest();
-        request.setUsername("mockuser1");
-        request.setPassword("P@ssword1");
-        request.setEmail("test@mock.one");
-        request.setFirstName("first1");
-        request.setLastName("last1");
-        request.setRole(new UserRole(1, "ADMIN", 1));
+        request.setUsername(mockUser1.getUsername());
+        request.setPassword(mockUser1.getPassword());
+        request.setEmail(mockUser1.getEmail());
+        request.setFirstName(mockUser1.getFirstName());
+        request.setLastName(mockUser1.getLastName());
+        request.setRole(mockUser1.getRole());
 
         when(mockUserRepo.existsByEmail(request.getEmail())).thenReturn(true);
 
@@ -229,12 +216,12 @@ public class UserServiceUnitTest {
     @Test
     void test_create_returnsResourceCreationResponse_providedValidUserInfo() {
         NewUserRequest request = new NewUserRequest();
-        request.setUsername("mockuser1");
-        request.setPassword("P@ssword1");
-        request.setEmail("test@mock.one");
-        request.setFirstName("first1");
-        request.setLastName("last1");
-        request.setRole(new UserRole(1, "ADMIN", 1));
+        request.setUsername(mockUser1.getUsername());
+        request.setPassword(mockUser1.getPassword());
+        request.setEmail(mockUser1.getEmail());
+        request.setFirstName(mockUser1.getFirstName());
+        request.setLastName(mockUser1.getLastName());
+        request.setRole(mockUser1.getRole());
 
         when(mockUserRepo.existsByUsername(request.getUsername())).thenReturn(false);
         when(mockUserRepo.existsByEmail(request.getEmail())).thenReturn(false);

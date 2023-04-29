@@ -26,20 +26,24 @@ public class ResourceServiceUnitTest {
     private ResourceService service;
     private final ResourceRepository mockResourceRepo = mock(ResourceRepository.class);
     private final EntitySearcher mockEntitySearcher = mock(EntitySearcher.class);
+    private Resource mockResource1;
+    private Resource mockResource2;
 
     @BeforeEach
     public void setup() {
         reset(mockResourceRepo, mockEntitySearcher);
         service = new ResourceService(mockResourceRepo, mockEntitySearcher);
+        mockResource1 = new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
+                "mock@resource.one", "first1", "last1",
+                new HashSet<Project>(), new HashSet<Task>());
+        mockResource2 = new Resource(UUID.fromString("aa4a20ab-cc98-4f9a-a09d-37b6fbd8087c"),
+                "mock@resource.two", "first2", "last2",
+                new HashSet<Project>(), new HashSet<Task>());
     }
 
     @Test
     void test_findAllResources_returnSetOfResourceResponses_providedRepoReturnsResources() {
-        List<Resource> mockResources = List.of(
-                new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                        "mock@resource.one", "first1", "last1", new HashSet<Project>(), new HashSet<Task>()),
-                new Resource(UUID.fromString("aa4a20ab-cc98-4f9a-a09d-37b6fbd8087c"),
-                        "mock@resource.two", "first2", "last2", new HashSet<Project>(), new HashSet<Task>()));
+        List<Resource> mockResources = List.of(mockResource1, mockResource2);
         when(mockResourceRepo.findAll()).thenReturn(mockResources);
 
         Set<ResourceResponseDetailed> response = service.findAll();
@@ -51,21 +55,18 @@ public class ResourceServiceUnitTest {
 
     @Test
     void test_findOneResource_returnResourceResponse_providedResourceId() {
-        Resource mockResource = new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                "mock@resource.one", "first1", "last1", new HashSet<Project>(), new HashSet<Task>());
+        when(mockResourceRepo.findById(mockResource1.getId())).thenReturn(Optional.of(mockResource1));
 
-        when(mockResourceRepo.findById(mockResource.getId())).thenReturn(Optional.of(mockResource));
-
-        ResourceResponseDetailed response = service.findOne(mockResource.getId());
+        ResourceResponseDetailed response = service.findOne(mockResource1.getId());
 
         // assert all fields of the generated response match the test resource, and that the repo was only
         // queried once
         assertAll(
-                () -> assertEquals(mockResource.getId(), response.getId()),
-                () -> assertEquals(mockResource.getEmail(), response.getEmail()),
-                () -> assertEquals(mockResource.getFirstName(), response.getFirstName()),
-                () -> assertEquals(mockResource.getLastName(), response.getLastName()));
-        verify(mockResourceRepo, times(1)).findById(mockResource.getId());
+                () -> assertEquals(mockResource1.getId(), response.getId()),
+                () -> assertEquals(mockResource1.getEmail(), response.getEmail()),
+                () -> assertEquals(mockResource1.getFirstName(), response.getFirstName()),
+                () -> assertEquals(mockResource1.getLastName(), response.getLastName()));
+        verify(mockResourceRepo, times(1)).findById(mockResource1.getId());
     }
 
     @Test
@@ -86,9 +87,8 @@ public class ResourceServiceUnitTest {
 
     @Test
     void test_search_returnsSetOfResourceResponses_providedValidParam() {
-        Resource mockResource = new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                "mock@resource.one", "first1", "last1", new HashSet<Project>(), new HashSet<Task>());
-        Set<Resource> mockResources = Set.of(mockResource);
+
+        Set<Resource> mockResources = Set.of(mockResource1);
 
         Map<String, String> criteria = new HashMap<>();
         criteria.put("email", "mock@resource.one");
@@ -99,17 +99,16 @@ public class ResourceServiceUnitTest {
         ResourceResponseDetailed content = response.stream().findFirst().get();
         assertAll(
                 () -> assertEquals(mockResources.size(), response.size()),
-                () -> assertEquals(mockResource.getId(), content.getId()),
-                () -> assertEquals(mockResource.getEmail(), content.getEmail()),
-                () -> assertEquals(mockResource.getFirstName(), content.getFirstName()),
-                () -> assertEquals(mockResource.getLastName(), content.getLastName()));
+                () -> assertEquals(mockResource1.getId(), content.getId()),
+                () -> assertEquals(mockResource1.getEmail(), content.getEmail()),
+                () -> assertEquals(mockResource1.getFirstName(), content.getFirstName()),
+                () -> assertEquals(mockResource1.getLastName(), content.getLastName()));
         verify(mockEntitySearcher, times(1)).search(criteria, Resource.class);
     }
 
     @Test
     void test_search_redirectsToFindAll_providedEmptyParams() {
-        List<Resource> mockResources = Arrays.asList(new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                "mock@resource.one", "first1", "last1", new HashSet<Project>(), new HashSet<Task>()));
+        List<Resource> mockResources = Arrays.asList(mockResource1, mockResource2);
 
         when(mockResourceRepo.findAll()).thenReturn(mockResources);
 
@@ -176,8 +175,6 @@ public class ResourceServiceUnitTest {
 
     @Test
     void test_update_returnsResourceResponse_providedValidResourceInfo() {
-        Resource mockResource = new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                "mock@resource.one", "first1", "last1", new HashSet<Project>(), new HashSet<Task>());
         NewResourceRequest request = new NewResourceRequest();
         request.setEmail("test@mock.two");
         request.setFirstName("first2");
@@ -185,14 +182,14 @@ public class ResourceServiceUnitTest {
 
 
         when(mockResourceRepo.findById(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b")))
-                .thenReturn(Optional.of(mockResource));
+                .thenReturn(Optional.of(mockResource1));
         when(mockResourceRepo.save(any(Resource.class))).thenReturn(any(Resource.class));
 
-        ResourceResponseDetailed response = service.update(mockResource.getId(), request);
+        ResourceResponseDetailed response = service.update(mockResource1.getId(), request);
 
         // Assert
         assertAll(
-                () -> assertEquals(mockResource.getId(), response.getId()),
+                () -> assertEquals(mockResource1.getId(), response.getId()),
                 () -> assertEquals(request.getEmail(), response.getEmail()),
                 () -> assertEquals(request.getFirstName(), response.getFirstName()),
                 () -> assertEquals(request.getLastName(), response.getLastName()));

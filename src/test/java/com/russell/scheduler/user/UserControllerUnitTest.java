@@ -5,6 +5,7 @@ import com.russell.scheduler.common.dtos.RecordCreationResponse;
 import com.russell.scheduler.common.exceptions.RecordNotFoundException;
 import com.russell.scheduler.user.dtos.NewUserRequest;
 import com.russell.scheduler.user.dtos.UserResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,20 +29,22 @@ public class UserControllerUnitTest {
     private UserService mockUserService;
     private final String PATH = "/users";
     private final String CONTENT_TYPE = "application/json";
+    private User mockUser1;
+    private User mockUser2;
+
+    @BeforeEach
+    public void config() {
+        mockUser1 = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
+                "mockuser1", "mock@user.one", "first1", "last1",
+                "P@ssword1", new UserRole(1, "ADMIN", 1));
+        mockUser2 = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087c"),
+                "mockuser2", "mock@user.two", "first2", "last2",
+                "P@ssword2", new UserRole(2, "TEST", 2));
+    }
 
     @Test
     void test_getAll_returnsSetOfUserResponses() throws Exception {
-        Set<UserResponse> mockUsers = new HashSet<>();
-        mockUsers.add(
-                new UserResponse(
-                        new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                                "mockuser1", "mock@user.one", "first1", "last1",
-                                "P@ssword1", new UserRole(1, "ADMIN", 1))));
-        mockUsers.add(
-                new UserResponse(
-                        new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087c"),
-                                "mockuser2", "mock@user.two", "first2", "last2",
-                                "P@ssword2", new UserRole(2, "TEST", 2))));
+        Set<UserResponse> mockUsers = Set.of(new UserResponse(mockUser1), new UserResponse(mockUser2));
 
         when(mockUserService.findAll()).thenReturn(mockUsers);
 
@@ -55,34 +58,28 @@ public class UserControllerUnitTest {
 
     @Test
     void test_getOneUser_returnsUserResponse_providedValidUUID() throws Exception {
-        UserResponse mockUser = new UserResponse(new User(
-                UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                "mockuser1", "mock@user.one", "first1", "last1",
-                "P@ssword1", new UserRole(1, "ADMIN", 1)));
+        UserResponse mockUserResp = new UserResponse(mockUser1);
 
-        when(mockUserService.findOne(mockUser.getId())).thenReturn(mockUser);
+        when(mockUserService.findOne(mockUserResp.getId())).thenReturn(mockUserResp);
 
-        MvcResult result = mockMvc.perform(get(PATH+"/id/"+mockUser.getId().toString()))
+        MvcResult result = mockMvc.perform(get(PATH+"/id/"+mockUserResp.getId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(header().string("content-type", CONTENT_TYPE))
-                .andExpect(jsonPath("$.username").value(mockUser.getUsername()))
-                .andExpect(jsonPath("$.email").value(mockUser.getEmail()))
-                .andExpect(jsonPath("$.firstName").value(mockUser.getFirstName()))
-                .andExpect(jsonPath("$.lastName").value(mockUser.getLastName()))
+                .andExpect(jsonPath("$.username").value(mockUserResp.getUsername()))
+                .andExpect(jsonPath("$.email").value(mockUserResp.getEmail()))
+                .andExpect(jsonPath("$.firstName").value(mockUserResp.getFirstName()))
+                .andExpect(jsonPath("$.lastName").value(mockUserResp.getLastName()))
                 .andExpect(jsonPath("$.role").isMap())
                 .andReturn();
     }
 
     @Test
     void test_getOneUser_throwsRecordNotFoundException_providedInvalidUUID() throws Exception {
-        UserResponse mockUser = new UserResponse(new User(
-                UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                "mockuser1", "mock@user.one", "first1", "last1",
-                "P@ssword1", new UserRole(1, "ADMIN", 1)));
+        UserResponse mockUserResp = new UserResponse(mockUser1);
 
-        when(mockUserService.findOne(mockUser.getId())).thenThrow(RecordNotFoundException.class);
+        when(mockUserService.findOne(mockUserResp.getId())).thenThrow(RecordNotFoundException.class);
 
-        MvcResult result = mockMvc.perform(get(PATH+"/id/"+mockUser.getId().toString()))
+        MvcResult result = mockMvc.perform(get(PATH+"/id/"+mockUserResp.getId().toString()))
                 .andExpect(status().isNotFound())
                 .andExpect(header().string("content-type", CONTENT_TYPE))
                 .andExpect(jsonPath("$.statusCode").value(404))
@@ -91,17 +88,14 @@ public class UserControllerUnitTest {
 
     @Test
     void test_search_returnsSetOfUserResponses_providedValidParam() throws Exception {
-        UserResponse mockUser = new UserResponse(new User(
-                UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                "mockuser1", "mock@user.one", "first1", "last1",
-                "P@ssword1", new UserRole(1, "ADMIN", 1)));
+        UserResponse mockUserResp = new UserResponse(mockUser1);
         Map<String, String> params = new HashMap<>();
-        params.put("firstName", mockUser.getFirstName());
+        params.put("firstName", mockUserResp.getFirstName());
 
-        when(mockUserService.search(params)).thenReturn(Set.of(mockUser));
+        when(mockUserService.search(params)).thenReturn(Set.of(mockUserResp));
 
         MvcResult result = mockMvc.perform(get(PATH+"/search")
-                        .param("firstName", mockUser.getFirstName()))
+                        .param("firstName", mockUserResp.getFirstName()))
                 .andExpect(status().isOk())
                 .andExpect(header().string("content-type", CONTENT_TYPE))
                 .andExpect(jsonPath("$").isArray())
@@ -123,8 +117,8 @@ public class UserControllerUnitTest {
 
     @Test
     void test_create_returnsRecordCreationResponse_givenNewUserRequest() throws Exception {
-        NewUserRequest req = new NewUserRequest("mockuser1", "P@ssword1", "mock@user.one",
-                "first1", "last1", new UserRole(1, "ADMIN", 1));
+        NewUserRequest req = new NewUserRequest(mockUser1.getUsername(), mockUser1.getPassword(), mockUser1.getEmail(),
+                mockUser1.getFirstName(), mockUser1.getLastName(), mockUser1.getRole());
         RecordCreationResponse resp = new RecordCreationResponse();
         resp.setId("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b");
         ObjectMapper json = new ObjectMapper();

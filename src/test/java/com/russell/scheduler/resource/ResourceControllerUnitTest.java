@@ -7,6 +7,7 @@ import com.russell.scheduler.project.Project;
 import com.russell.scheduler.resource.dtos.NewResourceRequest;
 import com.russell.scheduler.resource.dtos.ResourceResponseDetailed;
 import com.russell.scheduler.task.Task;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -31,22 +32,26 @@ public class ResourceControllerUnitTest {
     private ResourceService mockResourceService;
     private final String PATH = "/resources";
     private final String CONTENT_TYPE = "application/json";
+    private Resource mockResource1;
+    private Resource mockResource2;
+
+    @BeforeEach
+    public void config() {
+        mockResource1 = new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
+                "mock@resource.one", "first1", "last1",
+                new HashSet<Project>(), new HashSet<Task>());
+        mockResource2 = new Resource(UUID.fromString("aa4a20ab-cc98-4f9a-a09d-37b6fbd8087c"),
+                "mock@resource.two", "first2", "last2",
+                new HashSet<Project>(), new HashSet<Task>());
+    }
 
     @Test
     void test_getAll_returnsSetOfResourceResponses() throws Exception {
-        Set<ResourceResponseDetailed> mockResources = new HashSet<>();
-        mockResources.add(
-                new ResourceResponseDetailed(
-                        new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                                "mock@resource.one", "first1", "last1",
-                                new HashSet<Project>(), new HashSet<Task>())));
-        mockResources.add(
-                new ResourceResponseDetailed(
-                        new Resource(UUID.fromString("aa4a20ab-cc98-4f9a-a09d-37b6fbd8087c"),
-                                "mock@resource.two", "first2", "last2",
-                                new HashSet<Project>(), new HashSet<Task>())));
+        Set<ResourceResponseDetailed> mockResourceResp = Set.of(
+                new ResourceResponseDetailed(mockResource1),
+                new ResourceResponseDetailed(mockResource2));
 
-        when(mockResourceService.findAll()).thenReturn(mockResources);
+        when(mockResourceService.findAll()).thenReturn(mockResourceResp);
 
         MvcResult result = mockMvc.perform(get(PATH))
                 .andExpect(status().isOk())
@@ -58,32 +63,26 @@ public class ResourceControllerUnitTest {
 
     @Test
     void test_getOneResource_returnsResourceResponse_providedValidUUID() throws Exception {
-        ResourceResponseDetailed mockResource = new ResourceResponseDetailed(
-                new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                "mock@resource.one", "first1", "last1",
-                new HashSet<Project>(), new HashSet<Task>()));
+        ResourceResponseDetailed mockResourceResp = new ResourceResponseDetailed(mockResource1);
 
-        when(mockResourceService.findOne(mockResource.getId())).thenReturn(mockResource);
+        when(mockResourceService.findOne(mockResourceResp.getId())).thenReturn(mockResourceResp);
 
-        MvcResult result = mockMvc.perform(get(PATH+"/id/"+mockResource.getId().toString()))
+        MvcResult result = mockMvc.perform(get(PATH+"/id/"+mockResourceResp.getId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(header().string("content-type", CONTENT_TYPE))
-                .andExpect(jsonPath("$.email").value(mockResource.getEmail()))
-                .andExpect(jsonPath("$.firstName").value(mockResource.getFirstName()))
-                .andExpect(jsonPath("$.lastName").value(mockResource.getLastName()))
+                .andExpect(jsonPath("$.email").value(mockResourceResp.getEmail()))
+                .andExpect(jsonPath("$.firstName").value(mockResourceResp.getFirstName()))
+                .andExpect(jsonPath("$.lastName").value(mockResourceResp.getLastName()))
                 .andReturn();
     }
 
     @Test
     void test_getOneResource_throwsRecordNotFoundException_providedInvalidUUID() throws Exception {
-        ResourceResponseDetailed mockResource = new ResourceResponseDetailed(
-                new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                        "mock@resource.one", "first1", "last1",
-                        new HashSet<Project>(), new HashSet<Task>()));
+        ResourceResponseDetailed mockResourceResp = new ResourceResponseDetailed(mockResource1);
 
-        when(mockResourceService.findOne(mockResource.getId())).thenThrow(RecordNotFoundException.class);
+        when(mockResourceService.findOne(mockResourceResp.getId())).thenThrow(RecordNotFoundException.class);
 
-        MvcResult result = mockMvc.perform(get(PATH+"/id/"+mockResource.getId().toString()))
+        MvcResult result = mockMvc.perform(get(PATH+"/id/"+mockResourceResp.getId().toString()))
                 .andExpect(status().isNotFound())
                 .andExpect(header().string("content-type", CONTENT_TYPE))
                 .andExpect(jsonPath("$.statusCode").value(404))
@@ -92,17 +91,14 @@ public class ResourceControllerUnitTest {
 
     @Test
     void test_search_returnsSetOfResourceResponses_providedValidParam() throws Exception {
-        ResourceResponseDetailed mockResource = new ResourceResponseDetailed(
-                new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                        "mock@resource.one", "first1", "last1",
-                        new HashSet<Project>(), new HashSet<Task>()));
+        ResourceResponseDetailed mockResourceResp = new ResourceResponseDetailed(mockResource1);
         Map<String, String> params = new HashMap<>();
-        params.put("firstName", mockResource.getFirstName());
+        params.put("firstName", mockResourceResp.getFirstName());
 
-        when(mockResourceService.search(params)).thenReturn(Set.of(mockResource));
+        when(mockResourceService.search(params)).thenReturn(Set.of(mockResourceResp));
 
         MvcResult result = mockMvc.perform(get(PATH+"/search")
-                        .param("firstName", mockResource.getFirstName()))
+                        .param("firstName", mockResourceResp.getFirstName()))
                 .andExpect(status().isOk())
                 .andExpect(header().string("content-type", CONTENT_TYPE))
                 .andExpect(jsonPath("$").isArray())
@@ -142,8 +138,6 @@ public class ResourceControllerUnitTest {
 
     @Test
     void test_update_returnsResourceResponse_givenNewResourceRequest() throws Exception {
-        Resource mockResource = new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
-                "mock@resource.one", "first1", "last1", new HashSet<Project>(), new HashSet<Task>());
         NewResourceRequest req = new NewResourceRequest("mock@resource.two", "first2", "last2");
         ResourceResponseDetailed response = new ResourceResponseDetailed(
                 new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
@@ -152,9 +146,9 @@ public class ResourceControllerUnitTest {
 
         ObjectMapper json = new ObjectMapper();
 
-        when(mockResourceService.update(mockResource.getId(), req)).thenReturn(response);
+        when(mockResourceService.update(mockResource1.getId(), req)).thenReturn(response);
 
-        MvcResult result = mockMvc.perform(patch(PATH+"/id/"+mockResource.getId())
+        MvcResult result = mockMvc.perform(patch(PATH+"/id/"+mockResource1.getId())
                         .contentType(CONTENT_TYPE)
                         .content(json.writeValueAsString(req)))
                 .andExpect(status().isOk())
