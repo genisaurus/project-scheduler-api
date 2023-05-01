@@ -45,8 +45,8 @@ public class ResourceController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping
-    public void deleteResource(@RequestParam(name = "id") UUID resourceId) {
+    @DeleteMapping(value="/id/{id}")
+    public void deleteResource(@PathVariable(name="id") UUID resourceId) {
         resourceService.delete(resourceId);
     }
 

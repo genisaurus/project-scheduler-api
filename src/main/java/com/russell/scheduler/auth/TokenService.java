@@ -29,7 +29,7 @@ public class TokenService {
                 .claim("role", subject.getAuthUserRole())
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now+ config.getExpiration()))
-                .signWith(config.getAlg(), config.getSigningKey());
+                .signWith(config.getSigningKey());
 
         return tokenBuilder.compact();
     }
@@ -46,7 +46,7 @@ public class TokenService {
                     .parseClaimsJws(token)
                     .getBody();
 
-            return Optional.of(new Principal(claims.getId(), claims.get("role", UserRole.class)));
+            return Optional.of(new Principal(claims.getId(), claims.get("role", String.class)));
 
         } catch (Exception e) {
             e.printStackTrace();

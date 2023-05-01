@@ -1,5 +1,6 @@
 package com.russell.scheduler.project.dtos;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,9 +9,10 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProjectAssignment {
     @NotNull
-    private UUID resourceId;
-    @NotNull
     private UUID projectId;
+    @NotNull
+    private UUID resourceId;
 }

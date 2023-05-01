@@ -32,20 +32,10 @@ public class NewUserRequest {
     @NotNull
     private String lastName;
     @NotNull
-    private UserRole role;
+    private String roleName;
 
     public User extractUser() {
-        return new User(username, email, firstName, lastName, password, role);
+        return new User(username, email, firstName, lastName, password);
     }
 
-    @Override
-    public String toString() {
-        return "NewUserRequest{" +
-                "username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", role=" + role +
-                '}';
-    }
 }

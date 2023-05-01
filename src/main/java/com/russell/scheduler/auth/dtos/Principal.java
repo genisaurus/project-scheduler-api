@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 public class Principal {
 
     private String authUserId;
-    private UserRole authUserRole;
+    private String authUserRole;
 
     public Principal(UserResponse user) {
         this.authUserId = user.getId().toString();
-        this.authUserRole = user.getRole();
+        this.authUserRole = user.getRoleName();
     }
 
-    public Principal(String authUserId, UserRole authUserRole) {
+    public Principal(String authUserId, String authUserRole) {
         this.authUserId = authUserId;
         this.authUserRole = authUserRole;
     }

@@ -48,13 +48,6 @@ public class TaskService {
         this.tokenService = tokenService;
     }
 
-    public Set<TaskResponse> findAll() {
-        return taskRepository.findAll()
-                .stream()
-                .map(TaskResponse::new)
-                .collect(Collectors.toSet());
-    }
-
     public TaskResponse findOne(UUID taskID) {
         return taskRepository.findById(taskID)
                 .map(TaskResponse::new)
@@ -71,7 +64,7 @@ public class TaskService {
 
     public Set<TaskResponse> search(Map<String, String> params) {
         if (params.isEmpty())
-            return findAll();
+            return new HashSet<>();
 
         Set<Task> results = entitySearcher.search(params, Task.class);
         if (results.isEmpty())

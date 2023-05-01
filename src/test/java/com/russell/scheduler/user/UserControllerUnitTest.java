@@ -31,15 +31,17 @@ public class UserControllerUnitTest {
     private final String CONTENT_TYPE = "application/json";
     private User mockUser1;
     private User mockUser2;
+    private UserRole mockRole;
 
     @BeforeEach
     public void config() {
+        mockRole = new UserRole(1, "ADMIN", 1);
         mockUser1 = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
                 "mockuser1", "mock@user.one", "first1", "last1",
-                "P@ssword1", new UserRole(1, "ADMIN", 1));
+                "P@ssword1", mockRole);
         mockUser2 = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087c"),
                 "mockuser2", "mock@user.two", "first2", "last2",
-                "P@ssword2", new UserRole(2, "TEST", 2));
+                "P@ssword2", mockRole);
     }
 
     @Test
@@ -69,7 +71,7 @@ public class UserControllerUnitTest {
                 .andExpect(jsonPath("$.email").value(mockUserResp.getEmail()))
                 .andExpect(jsonPath("$.firstName").value(mockUserResp.getFirstName()))
                 .andExpect(jsonPath("$.lastName").value(mockUserResp.getLastName()))
-                .andExpect(jsonPath("$.role").isMap())
+                .andExpect(jsonPath("$.roleName").value(mockUserResp.getRoleName()))
                 .andReturn();
     }
 
@@ -118,7 +120,7 @@ public class UserControllerUnitTest {
     @Test
     void test_create_returnsRecordCreationResponse_givenNewUserRequest() throws Exception {
         NewUserRequest req = new NewUserRequest(mockUser1.getUsername(), mockUser1.getPassword(), mockUser1.getEmail(),
-                mockUser1.getFirstName(), mockUser1.getLastName(), mockUser1.getRole());
+                mockUser1.getFirstName(), mockUser1.getLastName(), mockUser1.getRole().getRoleName());
         RecordCreationResponse resp = new RecordCreationResponse();
         resp.setId("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b");
         ObjectMapper json = new ObjectMapper();

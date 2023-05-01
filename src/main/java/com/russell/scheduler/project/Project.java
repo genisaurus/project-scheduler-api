@@ -48,6 +48,15 @@ public class Project {
         this.tasks = tasks;
     }
 
+    public Project(UUID id, String name, LocalDate startDate, LocalDate endDate, Resource owner, Set<Task> tasks) {
+        this.id = id;
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.owner = owner;
+        this.tasks = tasks;
+    }
+
     public UUID getId() {
         return id;
     }
@@ -129,8 +138,7 @@ public class Project {
                 ", name='" + name + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", owner=" + owner +
-                ", tasks=" + tasks +
+                ", owner=" + owner.getLastName() + ", " + owner.getFirstName() + " (" + owner.getId() + ")" +
                 '}';
     }
 }

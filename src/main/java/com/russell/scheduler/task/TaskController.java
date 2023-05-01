@@ -24,19 +24,9 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @GetMapping(produces = "application/json")
-    public Set<TaskResponse> getAllTasks() {
-        return taskService.findAll();
-    }
-
     @GetMapping(value="id/{id}", produces = "application/json")
     public TaskResponse getSingleTask(@PathVariable(name="id") UUID taskId) {
         return taskService.findOne(taskId);
-    }
-
-    @GetMapping(value = "/search", produces = "application/json")
-    public Set<TaskResponse> search(@RequestParam Map<String, String> params) {
-        return taskService.search(params);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -59,7 +49,7 @@ public class TaskController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value="assign")
-    public TaskResponse assignProject(@RequestHeader("Authorization") String token, @RequestBody TaskAssignment assignment) {
+    public TaskResponse assignTask(@RequestHeader("Authorization") String token, @RequestBody TaskAssignment assignment) {
         return taskService.assignTaskToResource(token, assignment);
     }
 }

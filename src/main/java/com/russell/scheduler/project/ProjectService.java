@@ -2,11 +2,11 @@ package com.russell.scheduler.project;
 
 import com.russell.scheduler.common.EntitySearcher;
 import com.russell.scheduler.common.dtos.RecordCreationResponse;
+import com.russell.scheduler.project.dtos.ProjectResponseDetailed;
 import com.russell.scheduler.resource.Resource;
 import com.russell.scheduler.common.exceptions.RecordNotFoundException;
 import com.russell.scheduler.project.dtos.NewProjectRequest;
 import com.russell.scheduler.project.dtos.ProjectAssignment;
-import com.russell.scheduler.project.dtos.TaskResponse;
 import com.russell.scheduler.resource.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,16 +34,16 @@ public class ProjectService {
         this.entitySearcher = entitySearcher;
     }
 
-    public Set<TaskResponse> findAll() {
+    public Set<ProjectResponseDetailed> findAll() {
         return projectRepository.findAll()
                 .stream()
-                .map(TaskResponse::new)
+                .map(ProjectResponseDetailed::new)
                 .collect(Collectors.toSet());
     }
 
-    public TaskResponse findOne(UUID projectID) {
+    public ProjectResponseDetailed findOne(UUID projectID) {
         return projectRepository.findById(projectID)
-                .map(TaskResponse::new)
+                .map(ProjectResponseDetailed::new)
                 .orElseThrow(RecordNotFoundException::new);
     }
 
@@ -54,7 +54,7 @@ public class ProjectService {
         return new RecordCreationResponse(project.getId().toString());
     }
 
-    public Set<TaskResponse> search(Map<String, String> params) {
+    public Set<ProjectResponseDetailed> search(Map<String, String> params) {
         if (params.isEmpty())
             return findAll();
 
@@ -62,11 +62,11 @@ public class ProjectService {
         if (results.isEmpty())
             throw new RecordNotFoundException();
         return results.stream()
-                .map(TaskResponse::new)
+                .map(ProjectResponseDetailed::new)
                 .collect(Collectors.toSet());
     }
 
-    public TaskResponse assignProjectToResource(@Valid ProjectAssignment assignment) {
+    public ProjectResponseDetailed assignOwnerToProject(@Valid ProjectAssignment assignment) {
         Resource resource = resourceRepository.findById(assignment.getResourceId())
                 .orElseThrow(RecordNotFoundException::new);
         Project project = projectRepository.findById(assignment.getProjectId())
@@ -77,20 +77,20 @@ public class ProjectService {
         resource.getProjects().add(project);
         resourceRepository.save(resource);
         projectRepository.save(project);
-        return new TaskResponse(project);
+        return new ProjectResponseDetailed(project);
     }
 
     public void delete(UUID projectId) {
         projectRepository.deleteById(projectId);
     }
 
-    public TaskResponse update(UUID projectId, NewProjectRequest req) {
+    public ProjectResponseDetailed update(UUID projectId, NewProjectRequest req) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(RecordNotFoundException::new);
         project.setName(req.getName());
         project.setStartDate(req.getStartDate());
         project.setEndDate(req.getEndDate());
         projectRepository.save(project);
-        return new TaskResponse(project);
+        return new ProjectResponseDetailed(project);
     }
 }

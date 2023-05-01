@@ -211,4 +211,10 @@ public class ResourceServiceUnitTest {
         assertEquals("Record could not be found with the given search parameters", exception.getMessage());
         verify(mockResourceRepo, times(1)).findById(any());
     }
+
+    @Test
+    void test_delete() {
+        service.delete(UUID.randomUUID());
+        verify(mockResourceRepo, times(1)).delete(any());
+    }
 }

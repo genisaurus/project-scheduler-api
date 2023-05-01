@@ -1,6 +1,7 @@
 package com.russell.scheduler.project.dtos;
 
 import com.russell.scheduler.project.Project;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class NewProjectRequest {
     @NotNull
     @Length(min = 3)

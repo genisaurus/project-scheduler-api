@@ -3,17 +3,16 @@ package com.russell.scheduler.project;
 import com.russell.scheduler.common.dtos.RecordCreationResponse;
 import com.russell.scheduler.project.dtos.NewProjectRequest;
 import com.russell.scheduler.project.dtos.ProjectAssignment;
-import com.russell.scheduler.project.dtos.TaskResponse;
+import com.russell.scheduler.project.dtos.ProjectResponseDetailed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-@Controller
+@RestController
 @RequestMapping("/projects")
 public class ProjectController {
 
@@ -25,17 +24,17 @@ public class ProjectController {
     }
 
     @GetMapping(produces = "application/json")
-    public Set<TaskResponse> getAllProjects() {
+    public Set<ProjectResponseDetailed> getAllProjects() {
         return projectService.findAll();
     }
 
     @GetMapping(value="id/{id}", produces = "application/json")
-    public TaskResponse getSingleProject(@PathVariable(name="id") UUID projectId) {
+    public ProjectResponseDetailed getSingleProject(@PathVariable(name="id") UUID projectId) {
         return projectService.findOne(projectId);
     }
 
     @GetMapping(value = "/search", produces = "application/json")
-    public Set<TaskResponse> search(@RequestParam Map<String, String> params) {
+    public Set<ProjectResponseDetailed> search(@RequestParam Map<String, String> params) {
         return projectService.search(params);
     }
 
@@ -46,20 +45,20 @@ public class ProjectController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping
-    public void deleteProject(@RequestParam(name = "id") UUID projectId) {
+    @DeleteMapping(value="id/{id}")
+    public void deleteProject(@PathVariable(name="id") UUID projectId) {
         projectService.delete(projectId);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value="id/{id}")
-    public TaskResponse updateProject(@PathVariable(name = "id") UUID projectId, @RequestBody NewProjectRequest req) {
+    public ProjectResponseDetailed updateProject(@PathVariable(name = "id") UUID projectId, @RequestBody NewProjectRequest req) {
         return projectService.update(projectId, req);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value="assign")
-    public TaskResponse assignProject(@RequestBody ProjectAssignment assignment) {
-        return projectService.assignProjectToResource(assignment);
+    public ProjectResponseDetailed assignProject(@RequestBody ProjectAssignment assignment) {
+        return projectService.assignOwnerToProject(assignment);
     }
 }

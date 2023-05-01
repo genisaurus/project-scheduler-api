@@ -158,4 +158,12 @@ public class ResourceControllerUnitTest {
                 .andExpect(jsonPath("$.lastName").value(req.getLastName()))
                 .andReturn();
     }
+
+    @Test
+    void test_delete_returnsStatusOk_givenUUID() throws Exception {
+        MvcResult result = mockMvc.perform(delete(PATH+"/id/"+ UUID.randomUUID())
+                        .contentType(CONTENT_TYPE))
+                .andExpect(status().isNoContent())
+                .andReturn();
+    }
 }

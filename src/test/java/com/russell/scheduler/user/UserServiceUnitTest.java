@@ -20,20 +20,23 @@ public class UserServiceUnitTest {
 
     private UserService service;
     private final UserRepository mockUserRepo = mock(UserRepository.class);
+    private final UserRoleRepository mockUserRoleRepo = mock(UserRoleRepository.class);
     private final EntitySearcher mockEntitySearcher = mock(EntitySearcher.class);
     private User mockUser1;
     private User mockUser2;
+    private UserRole mockRole;
 
     @BeforeEach
     public void setup() {
-        reset(mockUserRepo, mockEntitySearcher);
-        service = new UserService(mockUserRepo, mockEntitySearcher);
+        reset(mockUserRepo, mockUserRoleRepo, mockEntitySearcher);
+        service = new UserService(mockUserRepo, mockUserRoleRepo, mockEntitySearcher);
+        mockRole = new UserRole(1, "ADMIN", 1);
         mockUser1 = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
                 "mockuser1", "mock@user.one", "first1", "last1",
-                "P@ssword1", new UserRole(1, "ADMIN", 1));
+                "P@ssword1", mockRole);
         mockUser2 = new User(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087c"),
                 "mockuser2", "mock@user.two", "first2", "last2",
-                "P@ssword2", new UserRole(2, "TEST", 2));
+                "P@ssword2", mockRole);
     }
 
     @Test
@@ -52,7 +55,7 @@ public class UserServiceUnitTest {
         assertAll(
                 () -> assertEquals(mockUser1.getId(), response.getId()),
                 () -> assertEquals(mockUser1.getUsername(), response.getUsername()),
-                () -> assertEquals(mockUser1.getRole(), response.getRole()));
+                () -> assertEquals(mockUser1.getRole().getRoleName(), response.getRoleName()));
         verify(mockUserRepo, times(1))
                 .findUserByUsernameAndPassword(mockUser1.getUsername(), mockUser1.getPassword());
     }
@@ -100,7 +103,7 @@ public class UserServiceUnitTest {
         assertAll(
                 () -> assertEquals(mockUser1.getId(), response.getId()),
                 () -> assertEquals(mockUser1.getUsername(), response.getUsername()),
-                () -> assertEquals(mockUser1.getRole(), response.getRole()));
+                () -> assertEquals(mockUser1.getRole().getRoleName(), response.getRoleName()));
         verify(mockUserRepo, times(1)).findById(mockUser1.getId());
     }
 
@@ -135,7 +138,7 @@ public class UserServiceUnitTest {
                 () -> assertEquals(mockUsers.size(), response.size()),
                 () -> assertEquals(mockUser1.getId(), content.getId()),
                 () -> assertEquals(mockUser1.getUsername(), content.getUsername()),
-                () -> assertEquals(mockUser1.getRole(), content.getRole()));
+                () -> assertEquals(mockUser1.getRole().getRoleName(), content.getRoleName()));
         verify(mockEntitySearcher, times(1)).search(criteria, User.class);
     }
 
@@ -175,7 +178,7 @@ public class UserServiceUnitTest {
         request.setEmail(mockUser1.getEmail());
         request.setFirstName(mockUser1.getFirstName());
         request.setLastName(mockUser1.getLastName());
-        request.setRole(mockUser1.getRole());
+        request.setRoleName(mockUser1.getRole().getRoleName());
 
         when(mockUserRepo.existsByUsername(request.getUsername())).thenReturn(true);
 
@@ -187,6 +190,7 @@ public class UserServiceUnitTest {
         assertEquals("That username is taken", exception.getMessage());
         verify(mockUserRepo, times(1)).existsByUsername(request.getUsername());
         verify(mockUserRepo, times(0)).existsByEmail(anyString());
+        verify(mockUserRoleRepo, times(0)).findUserRoleByRoleName(anyString());
         verify(mockUserRepo, times(0)).save(any());
     }
 
@@ -198,7 +202,7 @@ public class UserServiceUnitTest {
         request.setEmail(mockUser1.getEmail());
         request.setFirstName(mockUser1.getFirstName());
         request.setLastName(mockUser1.getLastName());
-        request.setRole(mockUser1.getRole());
+        request.setRoleName(mockUser1.getRole().getRoleName());
 
         when(mockUserRepo.existsByEmail(request.getEmail())).thenReturn(true);
 
@@ -210,6 +214,31 @@ public class UserServiceUnitTest {
         assertEquals("That email address is already associated with another user", exception.getMessage());
         verify(mockUserRepo, times(1)).existsByUsername(request.getUsername());
         verify(mockUserRepo, times(1)).existsByEmail(anyString());
+        verify(mockUserRoleRepo, times(0)).findUserRoleByRoleName(anyString());
+        verify(mockUserRepo, times(0)).save(any());
+    }
+
+    @Test
+    void test_create_throwsRecordPersistenceException_providedBadRoleName() {
+        NewUserRequest request = new NewUserRequest();
+        request.setUsername(mockUser1.getUsername());
+        request.setPassword(mockUser1.getPassword());
+        request.setEmail(mockUser1.getEmail());
+        request.setFirstName(mockUser1.getFirstName());
+        request.setLastName(mockUser1.getLastName());
+        request.setRoleName("Not a Real Role");
+
+        when(mockUserRoleRepo.findUserRoleByRoleName(request.getRoleName())).thenReturn(Optional.empty());
+
+        RecordPersistenceException exception = assertThrows(
+                RecordPersistenceException.class,
+                () -> service.create(request));
+
+        // Assert
+        assertEquals("Invalid role supplied", exception.getMessage());
+        verify(mockUserRepo, times(1)).existsByUsername(request.getUsername());
+        verify(mockUserRepo, times(1)).existsByEmail(anyString());
+        verify(mockUserRoleRepo, times(1)).findUserRoleByRoleName(anyString());
         verify(mockUserRepo, times(0)).save(any());
     }
 
@@ -221,10 +250,11 @@ public class UserServiceUnitTest {
         request.setEmail(mockUser1.getEmail());
         request.setFirstName(mockUser1.getFirstName());
         request.setLastName(mockUser1.getLastName());
-        request.setRole(mockUser1.getRole());
+        request.setRoleName(mockUser1.getRole().getRoleName());
 
         when(mockUserRepo.existsByUsername(request.getUsername())).thenReturn(false);
         when(mockUserRepo.existsByEmail(request.getEmail())).thenReturn(false);
+        when(mockUserRoleRepo.findUserRoleByRoleName(request.getRoleName())).thenReturn(Optional.of(mockRole));
         when(mockUserRepo.save(any(User.class))).thenReturn(any(User.class));
 
         RecordCreationResponse response = service.create(request);

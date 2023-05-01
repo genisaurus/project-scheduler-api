@@ -24,11 +24,13 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private UserRepository userRepository;
+    private UserRoleRepository userRoleRepository;
     private EntitySearcher entitySearcher;
 
     @Autowired
-    public UserService(UserRepository userRepository, EntitySearcher entitySearcher) {
+    public UserService(UserRepository userRepository, UserRoleRepository userRoleRepository, EntitySearcher entitySearcher) {
         this.userRepository = userRepository;
+        this.userRoleRepository = userRoleRepository;
         this.entitySearcher = entitySearcher;
     }
 
@@ -73,6 +75,9 @@ public class UserService {
             throw new RecordPersistenceException("That email address is already associated with another user");
 
         user.setId(UUID.randomUUID());
+        UserRole userRole = userRoleRepository.findUserRoleByRoleName(req.getRoleName())
+                .orElseThrow(() -> new RecordPersistenceException("Invalid role supplied"));
+        user.setRole(userRole);
         userRepository.save(user);
         return new RecordCreationResponse(user.getId().toString());
     }

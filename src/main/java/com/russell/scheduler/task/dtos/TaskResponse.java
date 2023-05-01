@@ -16,22 +16,18 @@ public class TaskResponse {
     private UUID id;
     private String name;
     private String description = ""; // defaults blank
-    private ResourceResponse assignee;
     private UserResponse assigner;
     private LocalDate startDate;
     private LocalDate endDate;
-    private ProjectResponse project;
     private LocalDate createdDate;
 
     public TaskResponse(Task task) {
         this.id = task.getId();
         this.name = task.getName();
         this.description = task.getDescription();
-        this.assignee = new ResourceResponse(task.getAssignee());
         this.assigner = new UserResponse(task.getAssigner());
         this.startDate = task.getStartDate();
         this.endDate = task.getEndDate();
-        this.project = new ProjectResponse(task.getProject());
         this.createdDate = task.getCreatedDate();
     }
 }
