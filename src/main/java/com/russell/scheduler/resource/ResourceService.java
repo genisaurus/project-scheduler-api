@@ -5,7 +5,7 @@ import com.russell.scheduler.common.dtos.RecordCreationResponse;
 import com.russell.scheduler.common.exceptions.RecordNotFoundException;
 import com.russell.scheduler.common.exceptions.RecordPersistenceException;
 import com.russell.scheduler.resource.dtos.NewResourceRequest;
-import com.russell.scheduler.resource.dtos.ResourceResponseDetailed;
+import com.russell.scheduler.resource.dtos.ResourceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,20 +29,20 @@ public class ResourceService {
         this.entitySearcher = entitySearcher;
     }
 
-    public Set<ResourceResponseDetailed> findAll() {
+    public Set<ResourceResponse> findAll() {
         return resourceRepository.findAll()
                 .stream()
-                .map(ResourceResponseDetailed::new)
+                .map(ResourceResponse::new)
                 .collect(Collectors.toSet());
     }
 
-    public ResourceResponseDetailed findOne(UUID resourceId) {
+    public ResourceResponse findOne(UUID resourceId) {
         return resourceRepository.findById(resourceId)
-                .map(ResourceResponseDetailed::new)
+                .map(ResourceResponse::new)
                 .orElseThrow(RecordNotFoundException::new);
     }
 
-    public Set<ResourceResponseDetailed> search(Map<String, String> params) {
+    public Set<ResourceResponse> search(Map<String, String> params) {
         if (params.isEmpty())
             return findAll();
 
@@ -50,7 +50,7 @@ public class ResourceService {
         if (results.isEmpty())
             throw new RecordNotFoundException();
         return results.stream()
-                .map(ResourceResponseDetailed::new)
+                .map(ResourceResponse::new)
                 .collect(Collectors.toSet());
     }
 
@@ -70,13 +70,13 @@ public class ResourceService {
         resourceRepository.deleteById(resourceId);
     }
 
-    public ResourceResponseDetailed update(UUID resourceId, NewResourceRequest req) {
+    public ResourceResponse update(UUID resourceId, NewResourceRequest req) {
         Resource resource = resourceRepository.findById(resourceId)
                 .orElseThrow(RecordNotFoundException::new);
         resource.setEmail(req.getEmail());
         resource.setFirstName(req.getFirstName());
         resource.setLastName(req.getLastName());
         resourceRepository.save(resource);
-        return new ResourceResponseDetailed(resource);
+        return new ResourceResponse(resource);
     }
 }

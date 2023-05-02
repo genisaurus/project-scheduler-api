@@ -23,7 +23,7 @@ public class JwtConfig {
     @PostConstruct // run after JwtConfig bean is created
     public void createSigningKey() {
         byte[] saltyBytes = Base64.encode(salt.getBytes());
-        signingKey = Keys.secretKeyFor(alg);
+        signingKey = new SecretKeySpec(saltyBytes, alg.getJcaName());
     }
 
     public int getExpiration() {

@@ -29,6 +29,18 @@ public class ExceptionResponseAspect {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ExceptionResponse handleMissingAuthTokenException(MissingAuthTokenException e) {
+        return new ExceptionResponse(401, e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ExceptionResponse handleAuthTokenParseException(AuthTokenParseException e) {
+        return new ExceptionResponse(401, e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ExceptionResponse handleAuthorizationException(AuthorizationException e) {
         return new ExceptionResponse(403, e.getMessage());

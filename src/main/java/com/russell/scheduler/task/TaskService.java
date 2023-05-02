@@ -3,6 +3,7 @@ package com.russell.scheduler.task;
 import com.russell.scheduler.auth.TokenService;
 import com.russell.scheduler.common.EntitySearcher;
 import com.russell.scheduler.common.dtos.RecordCreationResponse;
+import com.russell.scheduler.project.Project;
 import com.russell.scheduler.resource.Resource;
 import com.russell.scheduler.task.dtos.NewTaskRequest;
 import com.russell.scheduler.task.dtos.TaskAssignment;
@@ -55,7 +56,9 @@ public class TaskService {
     }
 
     public RecordCreationResponse create(@Valid NewTaskRequest req) {
-        Task task = req.extractTask();
+        Project project = projectRepository.findById(req.getProjectId())
+                .orElseThrow(RecordNotFoundException::new);
+        Task task = new Task(req.getName(), req.getDescription(), req.getStartDate(), req.getEndDate(), project);
         task.setId(UUID.randomUUID());
         task.setCreatedDate(LocalDate.now());
         taskRepository.save(task);
@@ -80,7 +83,6 @@ public class TaskService {
         Resource resource = resourceRepository.findById(assignment.getResourceId())
                 .orElseThrow(RecordNotFoundException::new);
         String userId = tokenService.extractTokenDetails(token)
-                .orElseThrow(() -> new InvalidJWTException("User ID could not be parsed from JWT"))
                 .getAuthUserId();
 
         User user = userRepository.findById(UUID.fromString(userId))

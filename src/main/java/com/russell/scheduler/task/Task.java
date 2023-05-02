@@ -59,6 +59,18 @@ public class Task {
         this.createdDate = createdDate;
     }
 
+    public Task(UUID id, String name, String description, Resource assignee, User assigner, LocalDate startDate, LocalDate endDate, Project project, LocalDate createdDate) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.assignee = assignee;
+        this.assigner = assigner;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.project = project;
+        this.createdDate = createdDate;
+    }
+
     public UUID getId() {
         return id;
     }

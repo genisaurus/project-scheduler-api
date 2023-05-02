@@ -5,7 +5,7 @@ import com.russell.scheduler.common.dtos.RecordCreationResponse;
 import com.russell.scheduler.common.exceptions.RecordNotFoundException;
 import com.russell.scheduler.project.Project;
 import com.russell.scheduler.resource.dtos.NewResourceRequest;
-import com.russell.scheduler.resource.dtos.ResourceResponseDetailed;
+import com.russell.scheduler.resource.dtos.ResourceResponse;
 import com.russell.scheduler.task.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,9 +47,9 @@ public class ResourceControllerUnitTest {
 
     @Test
     void test_getAll_returnsSetOfResourceResponses() throws Exception {
-        Set<ResourceResponseDetailed> mockResourceResp = Set.of(
-                new ResourceResponseDetailed(mockResource1),
-                new ResourceResponseDetailed(mockResource2));
+        Set<ResourceResponse> mockResourceResp = Set.of(
+                new ResourceResponse(mockResource1),
+                new ResourceResponse(mockResource2));
 
         when(mockResourceService.findAll()).thenReturn(mockResourceResp);
 
@@ -63,7 +63,7 @@ public class ResourceControllerUnitTest {
 
     @Test
     void test_getOneResource_returnsResourceResponse_providedValidUUID() throws Exception {
-        ResourceResponseDetailed mockResourceResp = new ResourceResponseDetailed(mockResource1);
+        ResourceResponse mockResourceResp = new ResourceResponse(mockResource1);
 
         when(mockResourceService.findOne(mockResourceResp.getId())).thenReturn(mockResourceResp);
 
@@ -78,7 +78,7 @@ public class ResourceControllerUnitTest {
 
     @Test
     void test_getOneResource_throwsRecordNotFoundException_providedInvalidUUID() throws Exception {
-        ResourceResponseDetailed mockResourceResp = new ResourceResponseDetailed(mockResource1);
+        ResourceResponse mockResourceResp = new ResourceResponse(mockResource1);
 
         when(mockResourceService.findOne(mockResourceResp.getId())).thenThrow(RecordNotFoundException.class);
 
@@ -91,7 +91,7 @@ public class ResourceControllerUnitTest {
 
     @Test
     void test_search_returnsSetOfResourceResponses_providedValidParam() throws Exception {
-        ResourceResponseDetailed mockResourceResp = new ResourceResponseDetailed(mockResource1);
+        ResourceResponse mockResourceResp = new ResourceResponse(mockResource1);
         Map<String, String> params = new HashMap<>();
         params.put("firstName", mockResourceResp.getFirstName());
 
@@ -139,7 +139,7 @@ public class ResourceControllerUnitTest {
     @Test
     void test_update_returnsResourceResponse_givenNewResourceRequest() throws Exception {
         NewResourceRequest req = new NewResourceRequest("mock@resource.two", "first2", "last2");
-        ResourceResponseDetailed response = new ResourceResponseDetailed(
+        ResourceResponse response = new ResourceResponse(
                 new Resource(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
                 "mock@resource.two", "first2", "last2", new HashSet<Project>(), new HashSet<Task>()));
 

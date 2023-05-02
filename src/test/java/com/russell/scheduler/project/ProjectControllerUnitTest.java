@@ -6,7 +6,6 @@ import com.russell.scheduler.common.exceptions.RecordNotFoundException;
 import com.russell.scheduler.project.dtos.NewProjectRequest;
 import com.russell.scheduler.project.dtos.ProjectAssignment;
 import com.russell.scheduler.project.dtos.ProjectResponse;
-import com.russell.scheduler.project.dtos.ProjectResponseDetailed;
 import com.russell.scheduler.resource.Resource;
 import com.russell.scheduler.task.Task;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,9 +49,9 @@ public class ProjectControllerUnitTest {
 
     @Test
     void test_getAll_returnsSetOfProjectResponses() throws Exception {
-        Set<ProjectResponseDetailed> mockProjectResp = Set.of(
-                new ProjectResponseDetailed(mockProject1),
-                new ProjectResponseDetailed(mockProject2));
+        Set<ProjectResponse> mockProjectResp = Set.of(
+                new ProjectResponse(mockProject1),
+                new ProjectResponse(mockProject2));
 
         when(mockProjectService.findAll()).thenReturn(mockProjectResp);
 
@@ -66,7 +65,7 @@ public class ProjectControllerUnitTest {
 
     @Test
     void test_getOneResource_returnsProjectResponse_providedValidUUID() throws Exception {
-        ProjectResponseDetailed mockProjectResp = new ProjectResponseDetailed(mockProject1);
+        ProjectResponse mockProjectResp = new ProjectResponse(mockProject1);
 
         when(mockProjectService.findOne(mockProjectResp.getId())).thenReturn(mockProjectResp);
 
@@ -94,7 +93,7 @@ public class ProjectControllerUnitTest {
 
     @Test
     void test_search_returnsSetOfProjectResponses_providedValidParam() throws Exception {
-        ProjectResponseDetailed mockProjectResp = new ProjectResponseDetailed(mockProject1);
+        ProjectResponse mockProjectResp = new ProjectResponse(mockProject1);
         Map<String, String> params = new HashMap<>();
         params.put("name", mockProjectResp.getName());
 
@@ -141,7 +140,7 @@ public class ProjectControllerUnitTest {
     @Test
     void test_update_returnsProjectResponse_givenNewProjectRequest() throws Exception {
         NewProjectRequest req = new NewProjectRequest("updatedMockProject", LocalDate.now(), LocalDate.now());
-        ProjectResponseDetailed response = new ProjectResponseDetailed(
+        ProjectResponse response = new ProjectResponse(
                 new Project(UUID.fromString("aa4a20aa-cc97-4f99-a09c-37b6fbd8087b"),
                         "updatedMockProject", LocalDate.now(), LocalDate.now(), new Resource(), new HashSet<Task>()));
 
@@ -173,7 +172,7 @@ public class ProjectControllerUnitTest {
                 "mock@resource.one", "first1", "last1",
                 new HashSet<Project>(), new HashSet<Task>());
         mockProject1.setOwner(mockResource1);
-        ProjectResponseDetailed response = new ProjectResponseDetailed(mockProject1);
+        ProjectResponse response = new ProjectResponse(mockProject1);
 
         ProjectAssignment assign = new ProjectAssignment(mockProject1.getId(), mockResource1.getId());
 
@@ -184,10 +183,7 @@ public class ProjectControllerUnitTest {
                         .content(json.writeValueAsString(assign)))
                 .andExpect(status().isOk())
                 .andExpect(header().string("content-type", CONTENT_TYPE))
-                .andExpect(jsonPath("$.owner.id").value(mockProject1.getOwner().getId().toString()))
-                .andExpect(jsonPath("$.owner.firstName").value(mockProject1.getOwner().getFirstName()))
-                .andExpect(jsonPath("$.owner.lastName").value(mockProject1.getOwner().getLastName()))
-                .andExpect(jsonPath("$.owner.email").value(mockProject1.getOwner().getEmail()))
+                .andExpect(jsonPath("$.ownerId").value(mockProject1.getOwner().getId().toString()))
                 .andReturn();
     }
 }

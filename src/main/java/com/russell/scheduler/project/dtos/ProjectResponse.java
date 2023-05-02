@@ -16,7 +16,7 @@ public class ProjectResponse {
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
-    private ResourceResponse owner;
+    private UUID ownerId;
 
 
     public ProjectResponse(Project project) {
@@ -24,6 +24,6 @@ public class ProjectResponse {
         this.name = project.getName();
         this.startDate = project.getStartDate();
         this.endDate = project.getEndDate();
-        this.owner = new ResourceResponse(project.getOwner());
+        this.ownerId = project.getOwner().getId();
     }
 }

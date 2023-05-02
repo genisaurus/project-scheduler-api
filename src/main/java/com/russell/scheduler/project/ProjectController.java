@@ -3,7 +3,7 @@ package com.russell.scheduler.project;
 import com.russell.scheduler.common.dtos.RecordCreationResponse;
 import com.russell.scheduler.project.dtos.NewProjectRequest;
 import com.russell.scheduler.project.dtos.ProjectAssignment;
-import com.russell.scheduler.project.dtos.ProjectResponseDetailed;
+import com.russell.scheduler.project.dtos.ProjectResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -24,17 +24,17 @@ public class ProjectController {
     }
 
     @GetMapping(produces = "application/json")
-    public Set<ProjectResponseDetailed> getAllProjects() {
+    public Set<ProjectResponse> getAllProjects() {
         return projectService.findAll();
     }
 
     @GetMapping(value="id/{id}", produces = "application/json")
-    public ProjectResponseDetailed getSingleProject(@PathVariable(name="id") UUID projectId) {
+    public ProjectResponse getSingleProject(@PathVariable(name="id") UUID projectId) {
         return projectService.findOne(projectId);
     }
 
     @GetMapping(value = "/search", produces = "application/json")
-    public Set<ProjectResponseDetailed> search(@RequestParam Map<String, String> params) {
+    public Set<ProjectResponse> search(@RequestParam Map<String, String> params) {
         return projectService.search(params);
     }
 
@@ -52,13 +52,13 @@ public class ProjectController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value="id/{id}")
-    public ProjectResponseDetailed updateProject(@PathVariable(name = "id") UUID projectId, @RequestBody NewProjectRequest req) {
+    public ProjectResponse updateProject(@PathVariable(name = "id") UUID projectId, @RequestBody NewProjectRequest req) {
         return projectService.update(projectId, req);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value="assign")
-    public ProjectResponseDetailed assignProject(@RequestBody ProjectAssignment assignment) {
+    public ProjectResponse assignProject(@RequestBody ProjectAssignment assignment) {
         return projectService.assignOwnerToProject(assignment);
     }
 }

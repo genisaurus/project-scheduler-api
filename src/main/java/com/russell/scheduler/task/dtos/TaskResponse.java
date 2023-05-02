@@ -1,9 +1,6 @@
 package com.russell.scheduler.task.dtos;
 
 import com.russell.scheduler.task.Task;
-import com.russell.scheduler.project.dtos.ProjectResponse;
-import com.russell.scheduler.resource.dtos.ResourceResponse;
-import com.russell.scheduler.user.dtos.UserResponse;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +13,9 @@ public class TaskResponse {
     private UUID id;
     private String name;
     private String description = ""; // defaults blank
-    private UserResponse assigner;
+    private UUID projectId;
+    private UUID assigneeId;
+    private UUID assignerId;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDate createdDate;
@@ -25,7 +24,9 @@ public class TaskResponse {
         this.id = task.getId();
         this.name = task.getName();
         this.description = task.getDescription();
-        this.assigner = new UserResponse(task.getAssigner());
+        this.projectId = task.getProject().getId();
+        this.assigneeId = task.getAssignee().getId();
+        this.assignerId = task.getAssigner().getId();
         this.startDate = task.getStartDate();
         this.endDate = task.getEndDate();
         this.createdDate = task.getCreatedDate();

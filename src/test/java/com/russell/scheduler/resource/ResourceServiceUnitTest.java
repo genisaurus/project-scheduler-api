@@ -6,7 +6,7 @@ import com.russell.scheduler.common.exceptions.RecordNotFoundException;
 import com.russell.scheduler.common.exceptions.RecordPersistenceException;
 import com.russell.scheduler.project.Project;
 import com.russell.scheduler.resource.dtos.NewResourceRequest;
-import com.russell.scheduler.resource.dtos.ResourceResponseDetailed;
+import com.russell.scheduler.resource.dtos.ResourceResponse;
 import com.russell.scheduler.task.Task;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +46,7 @@ public class ResourceServiceUnitTest {
         List<Resource> mockResources = List.of(mockResource1, mockResource2);
         when(mockResourceRepo.findAll()).thenReturn(mockResources);
 
-        Set<ResourceResponseDetailed> response = service.findAll();
+        Set<ResourceResponse> response = service.findAll();
 
         // assert the proper number of users was returned, and that the repo was only queried once
         assertEquals(mockResources.size(), response.size());
@@ -57,7 +57,7 @@ public class ResourceServiceUnitTest {
     void test_findOneResource_returnResourceResponse_providedResourceId() {
         when(mockResourceRepo.findById(mockResource1.getId())).thenReturn(Optional.of(mockResource1));
 
-        ResourceResponseDetailed response = service.findOne(mockResource1.getId());
+        ResourceResponse response = service.findOne(mockResource1.getId());
 
         // assert all fields of the generated response match the test resource, and that the repo was only
         // queried once
@@ -94,9 +94,9 @@ public class ResourceServiceUnitTest {
         criteria.put("email", "mock@resource.one");
         when(mockEntitySearcher.search(criteria, Resource.class)).thenReturn(mockResources);
 
-        Set<ResourceResponseDetailed> response = service.search(criteria);
+        Set<ResourceResponse> response = service.search(criteria);
         // assert the proper number of users was returned
-        ResourceResponseDetailed content = response.stream().findFirst().get();
+        ResourceResponse content = response.stream().findFirst().get();
         assertAll(
                 () -> assertEquals(mockResources.size(), response.size()),
                 () -> assertEquals(mockResource1.getId(), content.getId()),
@@ -112,7 +112,7 @@ public class ResourceServiceUnitTest {
 
         when(mockResourceRepo.findAll()).thenReturn(mockResources);
 
-        Set<ResourceResponseDetailed> response = service.search(new HashMap<String,String>());
+        Set<ResourceResponse> response = service.search(new HashMap<String,String>());
 
         // assert the proper number of users was returned, and that the repo was only queried once
         assertEquals(mockResources.size(), response.size());
@@ -185,7 +185,7 @@ public class ResourceServiceUnitTest {
                 .thenReturn(Optional.of(mockResource1));
         when(mockResourceRepo.save(any(Resource.class))).thenReturn(any(Resource.class));
 
-        ResourceResponseDetailed response = service.update(mockResource1.getId(), request);
+        ResourceResponse response = service.update(mockResource1.getId(), request);
 
         // Assert
         assertAll(
@@ -215,6 +215,6 @@ public class ResourceServiceUnitTest {
     @Test
     void test_delete() {
         service.delete(UUID.randomUUID());
-        verify(mockResourceRepo, times(1)).delete(any());
+        verify(mockResourceRepo, times(1)).deleteById(any());
     }
 }

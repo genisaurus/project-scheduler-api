@@ -15,13 +15,10 @@ public class ResourceResponse {
     private String firstName;
     private String lastName;
 
-
     public ResourceResponse(Resource resource) {
-
         this.id = resource.getId();
         this.email = resource.getEmail();
         this.firstName = resource.getFirstName();
         this.lastName = resource.getLastName();
-
     }
 }

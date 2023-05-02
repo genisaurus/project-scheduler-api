@@ -5,7 +5,7 @@ import com.russell.scheduler.common.dtos.RecordCreationResponse;
 import com.russell.scheduler.common.exceptions.RecordNotFoundException;
 import com.russell.scheduler.project.dtos.NewProjectRequest;
 import com.russell.scheduler.project.dtos.ProjectAssignment;
-import com.russell.scheduler.project.dtos.ProjectResponseDetailed;
+import com.russell.scheduler.project.dtos.ProjectResponse;
 import com.russell.scheduler.resource.Resource;
 import com.russell.scheduler.resource.ResourceRepository;
 import com.russell.scheduler.task.Task;
@@ -48,7 +48,7 @@ public class ProjectServiceUnitTest {
         List<Project> mockProjects = List.of(mockProject1, mockProject2);
         when(mockProjectRepo.findAll()).thenReturn(mockProjects);
 
-        Set<ProjectResponseDetailed> response = service.findAll();
+        Set<ProjectResponse> response = service.findAll();
 
         // assert the proper number of users was returned, and that the repo was only queried once
         assertEquals(mockProjects.size(), response.size());
@@ -59,7 +59,7 @@ public class ProjectServiceUnitTest {
     void test_findOne_returnProjectResponse_providedProjectId() {
         when(mockProjectRepo.findById(mockProject1.getId())).thenReturn(Optional.of(mockProject1));
 
-        ProjectResponseDetailed response = service.findOne(mockProject1.getId());
+        ProjectResponse response = service.findOne(mockProject1.getId());
 
         // assert all fields of the generated response match the test resource, and that the repo was only
         // queried once
@@ -95,9 +95,9 @@ public class ProjectServiceUnitTest {
         criteria.put("name", mockProject1.getName());
         when(mockEntitySearcher.search(criteria, Project.class)).thenReturn(mockProjects);
 
-        Set<ProjectResponseDetailed> response = service.search(criteria);
+        Set<ProjectResponse> response = service.search(criteria);
         // assert the proper number of users was returned
-        ProjectResponseDetailed content = response.stream().findFirst().get();
+        ProjectResponse content = response.stream().findFirst().get();
         assertAll(
                 () -> assertEquals(mockProjects.size(), response.size()),
                 () -> assertEquals(mockProject1.getId(), content.getId()),
@@ -113,7 +113,7 @@ public class ProjectServiceUnitTest {
 
         when(mockProjectRepo.findAll()).thenReturn(mockProjects);
 
-        Set<ProjectResponseDetailed> response = service.search(new HashMap<String,String>());
+        Set<ProjectResponse> response = service.search(new HashMap<String,String>());
 
         // assert the proper number of users was returned, and that the repo was only queried once
         assertEquals(mockProjects.size(), response.size());
@@ -165,7 +165,7 @@ public class ProjectServiceUnitTest {
                 .thenReturn(Optional.of(mockProject1));
         when(mockProjectRepo.save(any(Project.class))).thenReturn(any(Project.class));
 
-        ProjectResponseDetailed response = service.update(mockProject1.getId(), request);
+        ProjectResponse response = service.update(mockProject1.getId(), request);
 
         // Assert
         assertAll(
@@ -203,12 +203,12 @@ public class ProjectServiceUnitTest {
 
         ProjectAssignment request = new ProjectAssignment(mockProject1.getId(), mockResource.getId());
 
-        ProjectResponseDetailed response = service.assignOwnerToProject(request);
+        ProjectResponse response = service.assignOwnerToProject(request);
 
         // assert the proper message is returned, and that the repo was only queried once
         assertAll(
                 () -> assertEquals(mockProject1.getId(), response.getId()),
-                () -> assertEquals(mockResource.getId(), response.getOwner().getId()));
+                () -> assertEquals(mockResource.getId(), response.getOwnerId()));
         verify(mockResourceRepo, times(1)).findById(any());
         verify(mockProjectRepo, times(1)).findById(any());
         verify(mockResourceRepo, times(1)).save(any());
@@ -258,6 +258,6 @@ public class ProjectServiceUnitTest {
     @Test
     void test_delete() {
         service.delete(UUID.randomUUID());
-        verify(mockResourceRepo, times(1)).delete(any());
+        verify(mockProjectRepo, times(1)).deleteById(any());
     }
 }

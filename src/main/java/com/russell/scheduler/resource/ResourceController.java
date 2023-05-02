@@ -2,10 +2,9 @@ package com.russell.scheduler.resource;
 
 import com.russell.scheduler.common.dtos.RecordCreationResponse;
 import com.russell.scheduler.resource.dtos.NewResourceRequest;
-import com.russell.scheduler.resource.dtos.ResourceResponseDetailed;
+import com.russell.scheduler.resource.dtos.ResourceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -24,17 +23,17 @@ public class ResourceController {
     }
 
     @GetMapping(produces = "application/json")
-    public Set<ResourceResponseDetailed> getAllResources() {
+    public Set<ResourceResponse> getAllResources() {
         return resourceService.findAll();
     }
 
     @GetMapping(value="/id/{id}", produces = "application/json")
-    public ResourceResponseDetailed getSingleResource(@PathVariable(name="id") UUID resourceId) {
+    public ResourceResponse getSingleResource(@PathVariable(name="id") UUID resourceId) {
         return resourceService.findOne(resourceId);
     }
 
     @GetMapping(value = "/search", produces = "application/json")
-    public Set<ResourceResponseDetailed> search(@RequestParam Map<String, String> params) {
+    public Set<ResourceResponse> search(@RequestParam Map<String, String> params) {
         return resourceService.search(params);
     }
 
@@ -52,7 +51,7 @@ public class ResourceController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value="/id/{id}")
-    public ResourceResponseDetailed updateResource(@PathVariable(name = "id") UUID resourceId, @RequestBody NewResourceRequest req) {
+    public ResourceResponse updateResource(@PathVariable(name = "id") UUID resourceId, @RequestBody NewResourceRequest req) {
         return resourceService.update(resourceId, req);
     }
 }
