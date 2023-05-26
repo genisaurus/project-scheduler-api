@@ -11,7 +11,7 @@ import javax.validation.constraints.Pattern;
 public class AuthRequest {
     @Length(min = 3)
     String username;
-    @Pattern(regexp = "\"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[@$!%*?&])[A-Za-z\\\\d@$!%*?&]{8,}$\"")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[\\w@$!%*?&]{8,}$")
     String password;
 
     @Override

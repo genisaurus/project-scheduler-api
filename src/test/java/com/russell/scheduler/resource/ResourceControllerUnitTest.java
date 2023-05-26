@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(ResourceController.class)
-public class ResourceControllerUnitTest {
+class ResourceControllerUnitTest {
 
     @Autowired
     MockMvc mockMvc;

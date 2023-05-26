@@ -1,7 +1,6 @@
 package com.russell.scheduler.user.dtos;
 
 import com.russell.scheduler.user.User;
-import com.russell.scheduler.user.UserRole;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

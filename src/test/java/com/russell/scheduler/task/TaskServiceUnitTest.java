@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
-public class TaskServiceUnitTest {
+class TaskServiceUnitTest {
 
     private TaskService service;
     private final TaskRepository mockTaskRepo = mock(TaskRepository.class);

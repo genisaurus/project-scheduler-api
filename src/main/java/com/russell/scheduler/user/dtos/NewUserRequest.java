@@ -22,7 +22,7 @@ public class NewUserRequest {
     @NotNull
     @Size(min = 8)
     // min 8 chars, 1+ uppercase letter, 1+ lowercase letter, 1+ number, 1+ special char
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[\\w@$!%*?&]{8,}$")
     private String password;
 
     @NotNull

@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
-public class ResourceServiceUnitTest {
+class ResourceServiceUnitTest {
 
     private ResourceService service;
     private final ResourceRepository mockResourceRepo = mock(ResourceRepository.class);

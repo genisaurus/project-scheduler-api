@@ -41,7 +41,7 @@ public class EntitySearcher {
                     String[] keyFrags = key.split("\\.");
                     String nestedTypeName = keyFrags[0];
                     String nestedTypeFieldName = keyFrags[1];
-                    Join joinType = root.join(nestedTypeName);
+                    Join<?,?> joinType = root.join(nestedTypeName);
                     Field nestedTypeField = entityClass
                             .getDeclaredField(nestedTypeName)
                             .getClass()
@@ -61,10 +61,10 @@ public class EntitySearcher {
         return new HashSet<>(entityManager.createQuery(query).getResultList());
     }
 
-    private Predicate getPredicate(CriteriaBuilder cb, Predicate pred, String value, Field searchField, Path path) {
+    private Predicate getPredicate(CriteriaBuilder cb, Predicate pred, String value, Field searchField, Path<?> path) {
         if (searchField.getType().isEnum()) {
             try {
-                Enum enumVal = Enum.valueOf((Class<Enum>) searchField.getType(), value.toUpperCase());
+                Enum<?> enumVal = Enum.valueOf((Class<Enum>) searchField.getType(), value.toUpperCase());
                 pred = cb.and(pred, cb.equal(path, enumVal));
             } catch (IllegalArgumentException e) {
                 throw new RecordNotFoundException();

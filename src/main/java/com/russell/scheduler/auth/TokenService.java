@@ -4,17 +4,11 @@ import com.russell.scheduler.auth.dtos.Principal;
 import com.russell.scheduler.common.exceptions.AuthTokenParseException;
 import com.russell.scheduler.common.exceptions.InvalidJWTException;
 import com.russell.scheduler.common.exceptions.MissingAuthTokenException;
-import com.russell.scheduler.user.UserRole;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.naming.AuthenticationException;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 public class TokenService {
@@ -34,7 +28,7 @@ public class TokenService {
                 .claim("role", subject.getAuthUserRole())
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now+ config.getExpiration()))
-                .signWith(config.getSigningKey());
+                .signWith(SignatureAlgorithm.HS256, config.getSigningKey());
 
         return tokenBuilder.compact();
     }
